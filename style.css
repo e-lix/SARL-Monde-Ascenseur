@@ -1,3 +1,4 @@
+/* ===== BRAND CONFIGURATION ===== */
 :root {
   --black: #0a0a0a;
   --white: #f5f4f0; 
@@ -18,7 +19,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== NAVIGATION ===== */
+/* ===== NAVIGATION (Clean & Minimalist) ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
@@ -30,13 +31,13 @@ nav {
 .nav-logo { font-family: 'DM Serif Display'; font-size: 1.1rem; text-decoration: none; color: black; }
 .logo-red { color: var(--brand-red); }
 
-.nav-links { display: flex; gap: 15px; list-style: none; }
+.nav-links { display: flex; gap: 20px; list-style: none; }
 .nav-links a {
   text-decoration: none; color: var(--gray);
   font-size: 0.75rem; text-transform: uppercase; font-weight: 600;
   transition: 0.3s;
 }
-.nav-links a:hover { color: var(--brand-red); }
+.nav-links a:hover, .nav-links a.active { color: var(--brand-red); }
 
 /* ===== HERO SECTION ===== */
 #hero {
@@ -53,7 +54,6 @@ nav {
     color: white;
 }
 
-.hero-overlay { position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; }
 .hero-content { position: relative; z-index: 2; max-width: 850px; }
 
 .hero-title { 
@@ -71,7 +71,23 @@ nav {
 
 .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; }
 
-/* ===== STICKY EXPERIENCE (Editorial Layout) ===== */
+/* ===== SERVICES SECTION ===== */
+#services { padding: 100px 5%; background: var(--white); }
+
+.services-grid {
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+  gap: 25px; 
+  margin-top: 30px;
+}
+
+.service-card {
+  border: 1px solid var(--light-gray); padding: 40px;
+  background: white; transition: 0.3s;
+}
+.service-card:hover { border-color: var(--brand-red); transform: translateY(-5px); }
+
+/* ===== STICKY EXPERIENCE (Process/Product Images) ===== */
 #sticky-experience {
     padding: 120px 10%;
     background: white;
@@ -81,7 +97,7 @@ nav {
     display: flex;
     align-items: flex-start;
     gap: 80px;
-    margin-bottom: 180px; /* Space between the two sections */
+    margin-bottom: 180px;
 }
 
 .sticky-row.reverse { flex-direction: row-reverse; }
@@ -89,12 +105,12 @@ nav {
 .sticky-media {
     flex: 1;
     position: sticky;
-    top: 120px; /* Keeps the image stuck while scrolling text */
+    top: 120px;
 }
 
 .sticky-media img {
     width: 100%;
-    height: 450px; /* Fixed height for elegance */
+    height: 450px;
     object-fit: cover;
     border-radius: 2px;
 }
@@ -126,48 +142,65 @@ nav {
     line-height: 1.8;
 }
 
-/* ===== SERVICES GRID & OTHERS ===== */
-section { padding: 100px 5%; }
+/* ===== CONTACT SECTION (Fixed Form Layout) ===== */
+#contact { padding: 100px 5%; background: #fff; }
 
-.services-grid {
-  display: grid; 
-  grid-template-columns: 1fr; 
-  gap: 20px; 
-  margin-top: 30px;
+.contact-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.service-card {
-  border: 1px solid var(--light-gray); padding: 30px;
-  background: white; transition: 0.3s;
+.contact-info, .contact-form-wrapper {
+    flex: 1;
+    min-width: 300px;
 }
-.service-card:hover { border-color: var(--brand-red); transform: translateY(-5px); }
 
+input, textarea { 
+    width: 100%; 
+    padding: 14px; 
+    margin-bottom: 15px; 
+    border: 1px solid var(--light-gray); 
+    font-family: 'DM Sans', sans-serif;
+    display: block;
+    background: white;
+}
+
+input:focus, textarea:focus { border-color: var(--brand-red); outline: none; }
+
+/* ===== BUTTONS ===== */
 .btn {
-  padding: 14px 25px; text-decoration: none; display: inline-block;
-  font-size: 0.8rem; text-transform: uppercase; border: none;
-  background: var(--black); color: white; font-weight: 600; transition: 0.3s;
+  padding: 14px 30px; text-decoration: none; display: inline-block;
+  font-size: 0.85rem; text-transform: uppercase; border: none;
+  background: var(--black); color: white; cursor: pointer;
+  font-weight: 600; transition: 0.3s;
+  text-align: center;
 }
-.btn-primary { background: var(--brand-red); }
-.btn-outline { background: transparent; border: 2px solid white; }
+.btn:hover { background: var(--brand-red); transform: translateY(-2px); }
+.btn-primary { background: var(--brand-red); color: white !important; }
+.btn-outline { background: transparent; border: 2px solid white; color: white; }
+.btn-outline:hover { background: white; color: var(--black); }
 
+/* ===== WHATSAPP ===== */
 .whatsapp-float {
   position: fixed; width: 55px; height: 55px; bottom: 20px; right: 20px;
   background: #25d366; color: white; border-radius: 50%;
   display: flex; align-items: center; justify-content: center; z-index: 1000;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE FIXES ===== */
 @media (max-width: 900px) {
   .sticky-row, .sticky-row.reverse {
     flex-direction: column;
-    gap: 40px;
+    gap: 30px;
     margin-bottom: 100px;
   }
   .sticky-media { position: relative; top: 0; }
   .sticky-media img { height: 350px; }
-  .services-grid { grid-template-columns: 1fr; }
-}
-
-@media (min-width: 901px) {
-  .services-grid { grid-template-columns: repeat(3, 1fr); }
+  
+  .nav-links { display: none; } /* Better for mobile UX */
+  #hero { text-align: center; justify-content: center; }
+  .hero-btns { justify-content: center; }
 }
