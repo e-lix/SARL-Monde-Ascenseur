@@ -5,9 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no""")/>>
     <title>À Propos | SARL Monde Ascenseur</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet""")/>>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet""")/>>
+    <style>
+        /* Exact styles copied from Maintenance page */
+        .page-header-section {
+            padding: 140px 5% 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        .page-content p {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--gray);
+            max-width: 700px;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            margin-top: 40px;
+            border-left: 4px solid var(--brand-red);
+            padding: 10px 0 10px 25px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .info-box h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        .info-box p {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            padding-top: 30px;
+            border-top: 1px solid var(--light-gray);
+            max-width: 700px;
+        }
+        .stat-item h4 {
+            font-family: 'DM Serif Display', serif;
+            color: var(--brand-red);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        .stat-item span {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+    </style>
 </head>
 
 <body>
@@ -27,48 +87,46 @@
     <h1 class="page-title">Expertise & <em>Innovation</em></h1>
     
     <div class="page-content">
-        <!-- Main Intro Paragraph -->
-        <p style="font-size: 1.25rem; margin-bottom: 25px; color: var(--black); font-weight: 500;">
+        <p style="font-size: 1.25rem; font-weight: 500; color: #000;">
             Plus de 15 ans d’excellence technique au service des projets les plus exigeants en Algérie.
         </p>
 
-        <!-- Detailed Description -->
         <p>
-            SARL Monde Ascenseur, dirigée par <strong>AIT MECHDAL Nour eddine</strong>, s'appuie sur une équipe d'ingénieurs et techniciens de haut niveau. Nous maîtrisons l'installation et la maintenance de tous types d'équipements : des résidences privées aux hôtels de standing, en passant par les restaurants et les monte-charges industriels.
+            SARL Monde Ascenseur, dirigée par <strong>AIT MECHDAL Nour eddine</strong>, s'appuie sur une équipe d'ingénieurs et techniciens de haut niveau. Nous maîtrisons l'installation et la maintenance de tous types d'équipements : des résidences privées aux hôtels de standing.
         </p>
 
         <p>
-            Nous parcourons le monde pour sélectionner les <strong>meilleures technologies aux prix les plus justes</strong>. Choisir notre équipe, c’est opter pour des professionnels de haut calibre avec des tarifs défiant toute concurrence sur le marché.
+            Nous parcourons le monde pour sélectionner les meilleures technologies aux prix les plus justes. Choisir notre équipe, c’est opter pour des professionnels de haut calibre avec des tarifs défiant toute concurrence.
         </p>
 
-        <!-- The Stats Grid (Matches your high-end professional look) -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px; margin: 60px 0; border-top: 1px solid var(--light-gray); padding-top: 40px; max-width: 700px;">
-            <div>
-                <h4 style="color: var(--brand-red); font-family: 'DM Serif Display'; font-size: 2.2rem; margin-bottom: 5px;">15+ Ans</h4>
-                <p style="font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">D'expérience métier</p>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h4>15+ Ans</h4>
+                <span>Expérience métier</span>
             </div>
-            <div>
-                <h4 style="color: var(--brand-red); font-family: 'DM Serif Display'; font-size: 2.2rem; margin-bottom: 5px;">Secteur Large</h4>
-                <p style="font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Résidentiel & Industriel</p>
+            <div class="stat-item">
+                <h4>Global</h4>
+                <span>Sourcing mondial</span>
             </div>
-            <div>
-                <h4 style="color: var(--brand-red); font-family: 'DM Serif Display'; font-size: 2.2rem; margin-bottom: 5px;">Elite</h4>
-                <p style="font-size: 0.8rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Ingénierie de précision</p>
+            <div class="stat-item">
+                <h4>Elite</h4>
+                <span>Haut Calibre</span>
             </div>
         </div>
 
-        <!-- Bureau / Address Info Box -->
-        <div style="margin-top: 60px; border-left: 4px solid var(--brand-red); padding: 10px 0 10px 25px;">
-            <h2 style="font-family: 'DM Serif Display'; font-size: 2rem; margin-bottom: 15px;">Notre Bureau à Oran</h2>
-            <p style="margin-bottom: 5px;"><strong>📍 Adresse:</strong> Es-Senia, Oran, Algérie</p>
-            <p style="margin-bottom: 25px;"><strong>📞 Tél:</strong> +213 563 052 252</p>
-            <a href="https://google.com" target="_blank" class="btn btn-primary" style="text-decoration:none;">📍 Itinéraire Google Maps</a>
+        <div class="info-box">
+            <h2>Notre Bureau à Oran</h2>
+            <p><strong>📍 Adresse :</strong> Es-Senia, Oran, Algérie</p>
+            <p><strong>📞 Tél :</strong> +213 563 052 252</p>
+            <a href="https://google.com" target="_blank" style="color: var(--brand-red); font-weight: 600; text-decoration: none; display: inline-block; margin-top: 10px; font-family: 'DM Sans';">
+                📍 Itinéraire Google Maps →
+            </a>
         </div>
     </div>
 </section>
 
-<footer style="background: black; color: white; padding: 60px 5%; text-align: center; margin-top: 100px;">
-    <p style="font-size: 0.85rem; opacity: 0.8;">© 2026 Monde Ascenseur — AIT MECHDAL Nour eddine</p>
+<footer style="background: black; color: white; padding: 40px 5%; text-align: center; margin-top: 100px;">
+    <p style="font-size: 0.85rem; opacity: 0.8; font-family: 'DM Sans', sans-serif;">© 2026 Monde Ascenseur — AIT MECHDAL Nour eddine</p>
 </footer>
 
 </body>
