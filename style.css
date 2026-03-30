@@ -68,19 +68,16 @@ nav {
 /* ===== 3. PAGE HEADERS (Maintenance & A Propos Style) ===== */
 .page-header-section {
     padding: 140px 5% 60px;
-    max-width: 1200px; /* Fixed width to prevent stretching */
+    max-width: 1300px;
     margin: 0 auto;
 }
 
-.page-title {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 30px;
-}
-
 .page-content p {
+    font-weight: 300; /* This gives the 'Maintenance' look */
     font-size: 1.1rem;
-    max-width: 750px; /* Keeps lines short and elegant */
-    margin-bottom: 20px;
+    max-width: 750px; /* Keeps text from stretching to the edges */
+    line-height: 1.7;
+    color: var(--gray);
 }
 
 /* ===== 4. HERO SECTION (Index Page) ===== */
