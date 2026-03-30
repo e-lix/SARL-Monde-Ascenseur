@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>SARL Monde Ascenseur | Oran, Algérie</title>
     <meta name="description" content="Installation et maintenance d'ascenseurs à Oran.">
     
@@ -20,75 +20,74 @@
         <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
     </a>
     <ul class="nav-links">
-        <li><a href="index.html">Accueil</a></li>
         <li><a href="produits.html">Produits</a></li>
         <li><a href="maintenance.html">Maintenance</a></li>
         <li><a href="a-propos.html">À Propos</a></li>
     </ul>
 </nav>
 
-<section id="hero" style="padding: 160px 60px 80px;">
+<section id="hero">
     <div class="hero-left">
-        <h1 class="hero-title" style="font-size: 4rem; font-family: 'DM Serif Display';">Élevons chaque <em>étage</em></h1>
-        <p style="font-size: 1.2rem; color: var(--gray); margin-bottom: 30px;">
-            Expertise en installation et maintenance d'ascenseurs à Oran et ses environs.
+        <h1 class="hero-title">Élevons chaque <em>étage</em></h1>
+        <p style="font-size: 1.1rem; color: var(--gray); margin-bottom: 30px; max-width: 500px;">
+            Solutions de transport vertical pour le secteur résidentiel et industriel en Algérie.
         </p>
-        <a href="#contact" class="btn btn-primary">Demander un devis</a>
+        <a href="#contact" class="btn btn-primary" style="color:white;">Demander un devis</a>
     </div>
 </section>
 
-<section id="services" style="padding: 80px 60px;">
-    <h2 style="font-family: 'DM Serif Display'; font-size: 2.5rem; margin-bottom: 40px;">Nos Services</h2>
+<section id="services">
+    <h2 style="font-family: 'DM Serif Display'; font-size: 2rem; margin-bottom: 30px;">Nos Services</h2>
     
     <div class="services-grid">
         
         <a href="produits.html" style="text-decoration: none; color: inherit;">
             <div class="service-card">
                 <h3>Nos Produits</h3>
-                <p>Découvrez notre gamme d'ascenseurs résidentiels et monte-charges.</p>
-                <span style="color: var(--accent); font-weight: 600;">Voir les modèles →</span>
+                <p>Découvrez notre gamme d'ascenseurs et monte-charges.</p>
+                <span style="color: var(--accent); font-weight: 600; display: block; margin-top: 15px;">Voir les modèles →</span>
             </div>
         </a>
 
         <a href="maintenance.html" style="text-decoration: none; color: inherit;">
             <div class="service-card">
                 <h3>Maintenance</h3>
-                <p>Contrats de maintenance préventive et réparations techniques.</p>
-                <span style="color: var(--accent); font-weight: 600;">Nos horaires →</span>
+                <p>Entretien préventif et réparations techniques sur Oran.</p>
+                <span style="color: var(--accent); font-weight: 600; display: block; margin-top: 15px;">Nos horaires →</span>
             </div>
         </a>
 
         <a href="a-propos.html" style="text-decoration: none; color: inherit;">
             <div class="service-card">
                 <h3>À Propos</h3>
-                <p>Découvrez l'équipe de SARL Monde Ascenseur et notre bureau à Oran.</p>
-                <span style="color: var(--accent); font-weight: 600;">Nous trouver →</span>
+                <p>L'expertise de SARL Monde Ascenseur et notre bureau local.</p>
+                <span style="color: var(--accent); font-weight: 600; display: block; margin-top: 15px;">Nous trouver →</span>
             </div>
         </a>
 
     </div>
 </section>
 
-<section id="contact" style="padding: 80px 60px; background: #fff;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+<section id="contact" style="background: white;">
+    <div class="contact-container">
         <div>
-            <h2 style="font-family: 'DM Serif Display';">Contactez-nous</h2>
-            <p>Oran, Algérie</p>
-            <p><strong>Tél:</strong> +213 563 052 252</p>
-            <p><strong>Email:</strong> contact@mondeascenseur.dz</p>
+            <h2 style="font-family: 'DM Serif Display'; margin-bottom: 15px;">Contactez-nous</h2>
+            <p style="margin-bottom: 5px;"><strong>📍 Adresse:</strong> Oran, Algérie</p>
+            <p style="margin-bottom: 5px;"><strong>📞 Tél:</strong> +213 563 052 252</p>
+            <p style="margin-bottom: 20px;"><strong>✉️ Email:</strong> contact@mondeascenseur.dz</p>
         </div>
 
-        <form action="https://formspree.io/f/xnqedkzb" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-            <input type="text" name="name" placeholder="Nom complet" required style="padding: 15px; border: 1px solid #ddd;">
-            <input type="email" name="email" placeholder="Votre Email" required style="padding: 15px; border: 1px solid #ddd;">
-            <textarea name="message" placeholder="Votre projet..." style="padding: 15px; border: 1px solid #ddd; height: 120px;"></textarea>
-            <button type="submit" class="btn btn-primary">Envoyer le message</button>
+        <form action="https://formspree.io/f/xnqedkzb" method="POST">
+            <input type="text" name="name" placeholder="Votre Nom" required>
+            <input type="email" name="email" placeholder="Votre Email" required>
+            <textarea name="message" placeholder="Détails de votre projet..." style="height: 120px;" required></textarea>
+            <button type="submit" class="btn btn-primary" style="width: 100%; color:white;">Envoyer</button>
         </form>
     </div>
 </section>
 
-<footer style="background: black; color: white; padding: 40px 60px; text-align: center;">
-    <p>© 2026 Monde Ascenseur — AIT MECHDAL Nour eddine</p>
+<footer style="background: black; color: white; padding: 40px 5%; text-align: center;">
+    <p style="font-size: 0.85rem; opacity: 0.8;">© 2026 Monde Ascenseur — AIT MECHDAL Nour eddine</p>
 </footer>
 
 <a href="https://wa.me/21363052252" class="whatsapp-float" target="_blank">
