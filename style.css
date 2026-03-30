@@ -1,6 +1,6 @@
 :root {
   --black: #0a0a0a;
-  --white: #f5f4f0; 
+  --white: #f5f4f0; /* Soft off-white for a luxury feel */
   --accent: #c8a96e;
   --brand-red: #c0392b;
   --gray: #6b6b6b;
@@ -18,19 +18,13 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== NAVIGATION ===== */
+/* ===== NAVIGATION (Minimalist) ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
   padding: 15px 5%; background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px); z-index: 1000;
   border-bottom: 1px solid var(--light-gray);
-}
-
-.nav-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
 }
 
 .nav-logo { font-family: 'DM Serif Display'; font-size: 1.1rem; text-decoration: none; color: black; }
@@ -45,30 +39,16 @@ nav {
 
 .nav-links a:hover, .nav-links a.active { color: var(--brand-red); }
 
-/* Top Right Call Button */
-.btn-call-nav {
-    background: var(--brand-red);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    transition: 0.3s;
-    white-space: nowrap;
-}
-
 /* ===== HERO SECTION ===== */
 #hero {
     position: relative;
-    height: 90vh;
+    height: 85vh;
     min-height: 600px;
     display: flex;
     align-items: center;
     padding: 0 5%;
-    /* Update the URL below with your actual image path */
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+    /* Dark overlay makes white text pop against the background image */
+    background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), 
                 url('https://unsplash.com');
     background-size: cover;
     background-position: center;
@@ -78,19 +58,19 @@ nav {
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 800px;
+    max-width: 850px;
 }
 
 .hero-title { 
     font-family: 'DM Serif Display'; 
-    font-size: clamp(2.5rem, 5vw, 4.5rem); 
+    font-size: clamp(2.5rem, 5vw, 4rem); 
     line-height: 1.1; 
     margin-bottom: 20px; 
     text-transform: capitalize;
 }
 
 .hero-subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
     margin-bottom: 40px;
     opacity: 0.9;
     max-width: 600px;
@@ -103,13 +83,20 @@ nav {
 }
 
 /* ===== TYPOGRAPHY & SECTIONS ===== */
-section { padding: 80px 5%; }
+section { padding: 100px 5%; }
 
 .page-title { 
     font-family: 'DM Serif Display'; 
     font-size: 3rem; 
     line-height: 1.1; 
     margin-bottom: 20px; 
+}
+
+/* Common style for sub-page headers */
+.page-header-section {
+    padding: 140px 5% 40px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 /* ===== GRID SYSTEMS ===== */
@@ -126,6 +113,22 @@ section { padding: 80px 5%; }
 }
 .service-card:hover { border-color: var(--brand-red); transform: translateY(-5px); }
 
+/* Products Catalog Layout */
+.main-catalog { 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px 5% 60px; 
+    max-width: 1400px; 
+    margin: 0 auto; 
+    gap: 40px;
+}
+
+.product-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 25px; 
+}
+
 /* ===== BUTTONS & FORMS ===== */
 .btn {
   padding: 14px 25px; text-decoration: none; display: inline-block;
@@ -137,7 +140,9 @@ section { padding: 80px 5%; }
 
 .btn-primary { background: var(--brand-red); color: white !important; }
 
+/* Ghost button for secondary actions in Hero */
 .btn-outline {
+    background: transparent;
     border: 2px solid white;
     color: white;
 }
@@ -155,17 +160,24 @@ input, textarea {
   display: flex; align-items: center; justify-content: center; z-index: 1000;
   transition: 0.3s;
 }
+.whatsapp-float:hover { transform: scale(1.1); }
 
 /* ===== DESKTOP OVERRIDES ===== */
 @media (min-width: 900px) {
   .services-grid { grid-template-columns: repeat(3, 1fr); }
+  
   .contact-container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+  
   nav { padding: 20px 5%; }
   .nav-logo { font-size: 1.3rem; }
   .nav-links { gap: 30px; }
-  .btn-call-nav { padding: 10px 20px; font-size: 0.85rem; }
+  .nav-links a { font-size: 0.85rem; }
+
+  .main-catalog { flex-direction: row; }
+  .sidebar { width: 250px; flex-shrink: 0; }
 }
 
 @media (max-width: 600px) {
-    .nav-links { display: none; } /* Hide menu on small mobile to fit call button */
+    #hero { text-align: center; justify-content: center; }
+    .hero-btns { justify-content: center; }
 }
