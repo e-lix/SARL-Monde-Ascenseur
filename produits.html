@@ -1,81 +1,158 @@
-1  <!DOCTYPE html>
-2  <html lang="fr">
-3  <head>
-4      <meta charset="UTF-8">
-5      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-6      <link rel="stylesheet" href="style.css">
-7      <title>Catalogue - Monde Ascenseur</title>
-8      <style>
-9          .main-catalog { display: flex; padding: 140px 5% 60px; max-width: 1400px; margin: 0 auto; gap: 40px; }
-10         .sidebar { width: 250px; flex-shrink: 0; }
-11         .side-menu { list-style: none; padding: 0; border: 1px solid #eee; border-radius: 4px; position: sticky; top: 100px; }
-12         .side-menu li { border-bottom: 1px solid #eee; padding: 15px 20px; cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; color: #444; background: #f9f9f9; transition: 0.3s; }
-13         .side-menu li:hover { color: #e63946; background: white; }
-14         .side-menu a { text-decoration: none; color: inherit; display: block; }
-15
-16         .content-area { flex-grow: 1; }
-17         .cat-title { font-family: 'DM Serif Display', serif; color: #e63946; font-size: 2.5rem; margin: 60px 0 10px; }
-18         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 80px; }
-19         .product-card { background: white; border: 1px solid #eee; padding: 25px; display: flex; flex-direction: column; transition: 0.3s; }
-20         .product-card:hover { border-color: #e63946; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-21         .specs-container { background: #fdfdfd; border: 1px solid #f0f0f0; padding: 12px; margin: 15px 0; border-radius: 4px; }
-22         .specs-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
-23         .specs-table td { padding: 6px 0; border-bottom: 1px solid #f4f4f4; }
-24         .specs-table td:last-child { text-align: right; font-weight: 600; }
-25         .product-img { width: 100%; height: auto; margin-top: auto; }
-26     </style>
-27 </head>
-28 <body>
-29
-30 <nav>
-31     <a href="index.html" class="nav-logo"><span>SARL Monde</span> <span style="color:#e63946;">Ascenseur</span></a>
-32     <ul style="display:flex; list-style:none; gap:20px;">
-33         <li><a href="index.html">Accueil</a></li>
-34         <li><a href="produits.html">Produits</a></li>
-35     </ul>
-36 </nav>
-37
-38 <main class="main-catalog">
-39     <aside class="sidebar">
-40         <ul class="side-menu">
-41             <li><a href="#gearbox">Gearbox</a></li>
-42             <li><a href="#gearless">Gearless</a></li>
-43             <li><a href="#safety">Safety</a></li>
-44             <li><a href="#access">Attachments</a></li>
-45         </ul>
-46     </aside>
-47
-48     <div class="content-area">
-49         50         <h1 id="gearbox" class="cat-title">GEARBOX</h1>
-51         <div class="product-grid">
-52             <div class="product-card">
-53                 <span style="color:#e63946; font-size:0.7rem; font-weight:bold;">REF: M73</span>
-54                 <h3 style="margin:5px 0;">Moteur M73</h3>
-55                 <div class="specs-container">
-56                     <table class="specs-table">
-57                         <tr><td>Charge</td><td>450 kg</td></tr>
-58                         <tr><td>Vitesse</td><td>1.0 m/s</td></tr>
-59                     </table>
-60                 </div>
-61                 <img src="images/m73.png" class="product-img">
-62             </div>
-63             64         </div>
-65
-66         67         <h1 id="gearless" class="cat-title">GEARLESS</h1>
-68         <div class="product-grid">
-69             <div class="product-card">
-70                 <span style="color:#e63946; font-size:0.7rem; font-weight:bold;">REF: G300</span>
-71                 <h3 style="margin:5px 0;">Moteur G300</h3>
-72                 <div class="specs-container">
-73                     <table class="specs-table">
-74                         <tr><td>Charge</td><td>630 kg</td></tr>
-75                         <tr><td>Puissance</td><td>4.5 kW</td></tr>
-76                     </table>
-77                 </div>
-78                 <img src="images/g300.png" class="product-img">
-79             </div>
-80             81         </div>
-82     </div>
-83 </main>
-84 </body>
-85 </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Catalogue - Monde Ascenseur</title>
+    <style>
+        .main-catalog { display: flex; padding: 140px 5% 60px; max-width: 1400px; margin: 0 auto; gap: 40px; }
+        .sidebar { width: 250px; flex-shrink: 0; }
+        
+        .side-menu { 
+            list-style: none; 
+            padding: 0; 
+            border: 1px solid #eee; 
+            border-radius: 4px; 
+            position: sticky; 
+            top: 100px; 
+        }
+        
+        .side-menu li { 
+            border-bottom: 1px solid #eee; 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            font-size: 0.85rem; 
+            color: #444; 
+            background: #f9f9f9; 
+            transition: 0.3s; 
+        }
+        
+        .side-menu li:hover { color: #e63946; background: white; }
+        .side-menu a { text-decoration: none; color: inherit; display: block; }
+
+        .content-area { flex-grow: 1; }
+        .cat-title { 
+            font-family: 'DM Serif Display', serif; 
+            color: #e63946; 
+            font-size: 2.5rem; 
+            margin: 60px 0 10px; 
+            text-transform: uppercase;
+        }
+
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; 
+            margin-bottom: 80px; 
+        }
+
+        .product-card { 
+            background: white; 
+            border: 1px solid #eee; 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.3s; 
+        }
+
+        .product-card:hover { border-color: #e63946; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        .specs-container { 
+            background: #fdfdfd; 
+            border: 1px solid #f0f0f0; 
+            padding: 12px; 
+            margin: 15px 0; 
+            border-radius: 4px; 
+        }
+
+        .specs-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
+        .specs-table td { padding: 6px 0; border-bottom: 1px solid #f4f4f4; }
+        .specs-table td:last-child { text-align: right; font-weight: 600; color: #333; }
+        .specs-table tr:last-child td { border-bottom: none; }
+
+        .product-img { width: 100%; height: auto; margin-top: auto; display: block; }
+
+        @media (max-width: 900px) {
+            .main-catalog { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .side-menu { position: relative; top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="nav-logo">
+        <span>SARL Monde</span> <span style="color:#e63946;">Ascenseur</span>
+    </a>
+    <ul style="display:flex; list-style:none; gap:20px; margin-left: auto;">
+        <li><a href="index.html" style="text-decoration:none; color:inherit;">Accueil</a></li>
+        <li><a href="produits.html" style="text-decoration:none; color:#e63946; font-weight:bold;">Produits</a></li>
+        <li><a href="a-propos.html" style="text-decoration:none; color:inherit;">À Propos</a></li>
+    </ul>
+</nav>
+
+<main class="main-catalog">
+    <aside class="sidebar">
+        <ul class="side-menu">
+            <li><a href="#gearbox">Gearbox</a></li>
+            <li><a href="#gearless">Gearless</a></li>
+            <li><a href="#safety">Safety</a></li>
+            <li><a href="#access">Attachments</a></li>
+        </ul>
+    </aside>
+
+    <div class="content-area">
+        
+        <h1 id="gearbox" class="cat-title">Gearbox</h1>
+        <div class="product-grid">
+            
+            <div class="product-card">
+                <span style="color:#e63946; font-size:0.75rem; font-weight:bold; letter-spacing:1px;">REF: M73</span>
+                <h3 style="margin:5px 0; font-family: 'DM Serif Display';">Montanari M73</h3>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr><td>Charge Max</td><td>450 kg</td></tr>
+                        <tr><td>Vitesse Max</td><td>1.0 m/s</td></tr>
+                        <tr><td>Rapport</td><td>1/43</td></tr>
+                    </table>
+                </div>
+                <img src="images/m73.png" alt="Moteur M73" class="product-img">
+            </div>
+
+        </div>
+
+        <h1 id="gearless" class="cat-title">Gearless</h1>
+        <div class="product-grid">
+            
+            <div class="product-card">
+                <span style="color:#e63946; font-size:0.75rem; font-weight:bold; letter-spacing:1px;">REF: MGV25</span>
+                <h3 style="margin:5px 0; font-family: 'DM Serif Display';">Montanari MGV25</h3>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr><td>Charge Max</td><td>630 kg</td></tr>
+                        <tr><td>Vitesse Max</td><td>1.6 m/s</td></tr>
+                        <tr><td>Poulie</td><td>320 mm</td></tr>
+                    </table>
+                </div>
+                <img src="images/mgv25.png" alt="Moteur Gearless MGV25" class="product-img">
+            </div>
+
+        </div>
+
+        <h1 id="safety" class="cat-title">Safety</h1>
+        <div class="product-grid">
+            
+            <div class="product-card">
+                <span style="color:#e63946; font-size:0.75rem; font-weight:bold; letter-spacing:1px;">REF: TAB 163</span>
+                <h3 style="margin:5px 0; font-family: 'DM Serif Display';">Limiteur de Vitesse</h3>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr><td>Diamètre</td><td>200 mm</td></tr>
+                        <tr><td>Vitesse</td><td>0.3 - 2.0 m/s</td></tr>
+                    </table>
+                </div>
+                <img src="images/limiteur.png" alt="Limiteur de
