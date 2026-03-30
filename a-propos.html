@@ -2,28 +2,79 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>À Propos | SARL Monde Ascenseur</title>
     <link rel="stylesheet" href="style.css">
-    <title>À Propos - Monde Ascenseur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        /* Specific page styles to ensure consistency with Index */
+        .page-header-section {
+            padding: 140px 5% 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3.5rem; 
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        .page-content p {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--gray);
+            max-width: 800px;
+        }
+        .bureau-section h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #000;
+        }
+    </style>
 </head>
+
 <body>
-    <section style="padding:140px 5% 60px;">
-        <h1 class="hero-title">Qui sommes-nous ?</h1>
-        <p style="max-width:800px; line-height:1.6; font-size:1.1rem; color:var(--gray);">
+
+<nav>
+    <a href="index.html" class="nav-logo">
+        <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="produits.html">Produits</a></li>
+        <li><a href="maintenance.html">Maintenance</a></li>
+        <li><a href="a-propos.html" class="active">À Propos</a></li>
+    </ul>
+</nav>
+
+<section class="page-header-section">
+    <h1 class="page-title">Qui sommes-nous ?</h1>
+    
+    <div class="page-content">
+        <p>
             SARL Monde Ascenseur est une entreprise basée à <strong>Oran</strong>, spécialisée dans l'ingénierie du transport vertical. 
             Sous la direction de <strong>AIT MECHDAL Nour eddine</strong>, nous nous engageons à fournir des solutions de levage 
             sécurisées, modernes et durables pour le marché algérien.
         </p>
 
-        <div style="margin-top:60px; max-width: 500px;">
+        <div class="bureau-section" style="margin-top:60px; max-width: 500px;">
             <h2>Notre Bureau</h2>
-            <p style="margin-bottom: 5px;">Es-Senia, Oran, Algérie</p>
-            <p style="margin-bottom: 20px;">Téléphone: +213 563 052 252</p>
+            <p style="margin-bottom: 5px; font-family: 'DM Sans', sans-serif;">Es-Senia, Oran, Algérie</p>
+            <p style="margin-bottom: 20px; font-family: 'DM Sans', sans-serif;">Téléphone: +213 563 052 252</p>
             
-            <a href="https://www.google.com/maps/dir/35.7105664,-0.5537792/M976%2BQ24,+Oran/@35.681961,-0.6783974,12z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0xd7e8854841f537d:0x7a5516dda857aa4e!2m2!1d-0.6399219!2d35.6643875?entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn" style="text-decoration:none; display:inline-block; background:black; color:white; padding:12px 24px; border-radius:4px; font-weight:500;">
+            <a href="https://www.google.com/maps/dir/35.7105664,-0.5537792/M976%2BQ24,+Oran/@35.681961,-0.6783974,12z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0xd7e8854841f537d:0x7a5516dda857aa4e!2m2!1d-0.6399219!2d35.6643875?entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn" style="text-decoration:none; display:inline-block; background:var(--brand-red); color:white; padding:12px 24px; border-radius:4px; font-weight:600; font-family: 'DM Sans', sans-serif;">
                 📍 Ouvrir dans Google Maps
             </a>
         </div>
-    </section>
+    </div>
+</section>
+
+<footer style="background: black; color: white; padding: 40px 5%; text-align: center; margin-top: 100px;">
+    <p style="font-size: 0.85rem; opacity: 0.8; font-family: 'DM Sans', sans-serif;">© 2026 Monde Ascenseur — AIT MECHDAL Nour eddine</p>
+</footer>
+
 </body>
 </html>
