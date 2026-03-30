@@ -2,23 +2,86 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Maintenance | SARL Monde Ascenseur</title>
     <link rel="stylesheet" href="style.css">
-    <title>Maintenance - Monde Ascenseur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        .page-header-section {
+            padding: 140px 5% 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        .page-content p {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--gray);
+            max-width: 700px;
+        }
+        .info-box {
+            margin-top: 40px;
+            border-left: 4px solid var(--brand-red);
+            padding: 10px 0 10px 25px;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .info-box h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        .info-box p {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+    </style>
 </head>
+
 <body>
 
-<section style="padding:140px 60px 60px;">
-    <h1 class="hero-title">Maintenance & <em>Réparation</em></h1>
-    <p style="max-width:700px; line-height:1.6; color:var(--gray);">
-        La sécurité de vos usagers est notre priorité. Nous proposons des contrats de maintenance préventive pour éviter les pannes avant qu'elles n'arrivent.
-    </p>
+<nav>
+    <a href="index.html" class="nav-logo">
+        <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="produits.html">Produits</a></li>
+        <li><a href="maintenance.html" class="active">Maintenance</a></li>
+        <li><a href="a-propos.html">À Propos</a></li>
+    </ul>
+</nav>
 
-    <div style="margin-top:40px; border-left:4px solid var(--brand-red); padding-left:20px;">
-        <h3>Horaires d'intervention</h3>
-        <p>Du Dimanche au Jeudi : 08:30 — 16:00</p>
-        <p>Samedi : Sur rendez-vous uniquement</p>
+<section class="page-header-section">
+    <h1 class="page-title">Maintenance & <em>Réparation</em></h1>
+    
+    <div class="page-content">
+        <p>
+            La sécurité de vos usagers est notre priorité. Nous proposons des contrats de maintenance préventive 
+            pour assurer la longévité de vos installations et éviter les pannes avant qu'elles n'arrivent.
+        </p>
+
+        <div class="info-box">
+            <h3>Horaires d'intervention</h3>
+            <p><strong>Dimanche — Jeudi :</strong> 08:30 — 16:00</p>
+            <p><strong>Samedi :</strong> Sur rendez-vous uniquement</p>
+            <p style="margin-top: 15px; color: var(--brand-red); font-weight: 600;">
+                Service technique basé à Oran.
+            </p>
+        </div>
     </div>
 </section>
+
+<footer style="background: black; color: white; padding: 40px 5%; text-align: center; margin-top: 100px;">
+    <p style="font-size: 0.85rem; opacity: 0.8; font-family: 'DM Sans', sans-serif;">© 2026 Monde Ascenseur — AIT MECHDAL Nour eddine</p>
+</footer>
 
 </body>
 </html>
