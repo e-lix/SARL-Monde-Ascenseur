@@ -2,33 +2,59 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Nos Produits - Monde Ascenseur Oran</title>
+    <title>Nos Produits - Monde Ascenseur</title>
 </head>
 <body>
 
-<section style="padding:140px 60px 60px;">
-    <h1 class="hero-title">Notre Gamme de <em>Produits</em></h1>
-    <p style="color:var(--gray); margin-bottom:40px;">Solutions de levage certifiées pour tous types de bâtiments.</p>
+<nav>
+    <a href="index.html" class="nav-logo">
+        <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
+    </a>
+    <ul class="nav-links">
+        <li><a href="produits.html" class="active">Produits</a></li>
+        <li><a href="maintenance.html">Maintenance</a></li>
+        <li><a href="a-propos.html">À Propos</a></li>
+    </ul>
+</nav>
 
-    <div class="services-grid">
+<section style="padding:140px 5% 60px;">
+    <h1 class="hero-title">Nos Solutions de Levage</h1>
+    <p style="color:var(--gray); margin-bottom: 40px;">Une gamme complète adaptée aux standards de sécurité algériens.</p>
+
+    <div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
         
-        <div class="service-card">
-            <div style="background:#ddd; height:200px; margin-bottom:15px;"></div> <h3>Ascenseur Résidentiel</h3>
-            <p>Modèles compacts et silencieux pour villas et promotions immobilières.</p>
+        <div class="product-card" style="border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white; transition: 0.3s;">
+            <div style="height: 250px; background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc;">
+                <span>[Photo Ascenseur Résidentiel]</span>
+            </div>
+            <div style="padding: 20px;">
+                <h3 style="margin-bottom: 10px;">Ascenseurs Résidentiels</h3>
+                <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 15px;">Confort et design pour les promotions immobilières et villas.</p>
+                <ul style="font-size: 0.85rem; padding-left: 15px; color: #555;">
+                    <li>Capacité: 450kg - 1000kg</li>
+                    <li>Vitesse: 1.0 - 1.6 m/s</li>
+                    <li>Options: Gearless (Silencieux)</li>
+                </ul>
+                <a href="index.html#contact" class="btn" style="display: block; text-align: center; margin-top: 20px; border: 1px solid var(--brand-red); color: var(--brand-red); text-decoration: none; padding: 10px; border-radius: 4px;">Demander un devis</a>
+            </div>
         </div>
 
-        <div class="service-card">
-            <div style="background:#ddd; height:200px; margin-bottom:15px;"></div>
-            <h3>Monte-Charge Industriel</h3>
-            <p>Capacité allant de 500kg à 5000kg pour entrepôts et usines.</p>
-        </div>
-
-        <div class="service-card">
-            <div style="background:#ddd; height:200px; margin-bottom:15px;"></div>
-            <h3>Nouveau Modèle 2026</h3>
-            <p>Description de votre nouveau produit ici.</p>
+        <div class="product-card" style="border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white;">
+            <div style="height: 250px; background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc;">
+                <span>[Photo Monte-Charge]</span>
+            </div>
+            <div style="padding: 20px;">
+                <h3 style="margin-bottom: 10px;">Monte-Charges Industriels</h3>
+                <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 15px;">Robustesse pour les usines, entrepôts et centres commerciaux.</p>
+                <ul style="font-size: 0.85rem; padding-left: 15px; color: #555;">
+                    <li>Capacité: Jusqu'à 5000kg</li>
+                    <li>Structure renforcée</li>
+                    <li>Portes automatiques ou manuelles</li>
+                </ul>
+                <a href="index.html#contact" class="btn" style="display: block; text-align: center; margin-top: 20px; border: 1px solid var(--brand-red); color: var(--brand-red); text-decoration: none; padding: 10px; border-radius: 4px;">Fiche Technique</a>
+            </div>
         </div>
 
     </div>
