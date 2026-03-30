@@ -1,4 +1,4 @@
-/* ===== BRAND CONFIGURATION ===== */
+/* ===== 1. GLOBAL TYPOGRAPHY & VARS ===== */
 :root {
   --black: #0a0a0a;
   --white: #f5f4f0; 
@@ -8,18 +8,35 @@
   --light-gray: #e8e7e3;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    -webkit-font-smoothing: antialiased;
+}
+
 html { scroll-behavior: smooth; }
 
+/* Forces consistency across ALL pages */
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--white);
   color: var(--black);
-  line-height: 1.5;
-  overflow-x: hidden;
+  line-height: 1.6;
 }
 
-/* ===== NAVIGATION (Clean & Minimalist) ===== */
+h1, h2, h3, .hero-title, .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--black);
+}
+
+p, a, li, input, textarea, span {
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* ===== 2. NAVIGATION ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
@@ -28,179 +45,87 @@ nav {
   border-bottom: 1px solid var(--light-gray);
 }
 
-.nav-logo { font-family: 'DM Serif Display'; font-size: 1.1rem; text-decoration: none; color: black; }
+.nav-logo { font-size: 1.2rem; text-decoration: none; color: black; }
 .logo-red { color: var(--brand-red); }
 
-.nav-links { display: flex; gap: 20px; list-style: none; }
+.nav-links { display: flex; gap: 25px; list-style: none; }
 .nav-links a {
   text-decoration: none; color: var(--gray);
-  font-size: 0.75rem; text-transform: uppercase; font-weight: 600;
+  font-size: 0.8rem; text-transform: uppercase; font-weight: 600;
   transition: 0.3s;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--brand-red); }
 
-/* ===== HERO SECTION ===== */
+/* ===== 3. HERO SECTION ===== */
 #hero {
     position: relative;
     height: 85vh;
-    min-height: 600px;
     display: flex;
     align-items: center;
     padding: 0 5%;
-    background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), 
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
                 url('https://unsplash.com');
     background-size: cover;
     background-position: center;
     color: white;
 }
 
-.hero-content { position: relative; z-index: 2; max-width: 850px; }
+.hero-content { max-width: 850px; z-index: 2; }
+.hero-title { font-size: clamp(2.5rem, 5vw, 4.5rem); color: white; margin-bottom: 20px; }
+.hero-subtitle { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.9; }
 
-.hero-title { 
-    font-family: 'DM Serif Display'; 
-    font-size: clamp(2.5rem, 5vw, 4rem); 
-    line-height: 1.1; 
-    margin-bottom: 20px; 
-}
+/* ===== 4. STICKY EXPERIENCE ===== */
+#sticky-experience { padding: 120px 10%; background: white; }
+.sticky-row { display: flex; gap: 80px; margin-bottom: 150px; }
+.sticky-row.reverse { flex-direction: row-reverse; }
+.sticky-media { flex: 1; position: sticky; top: 120px; }
+.sticky-media img { width: 100%; height: 450px; object-fit: cover; border-radius: 2px; }
+.sticky-content { flex: 1; padding-top: 40px; }
+.sticky-content .tag { color: var(--brand-red); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; display: block; margin-bottom: 15px;}
+.sticky-content h2 { font-size: 3rem; margin-bottom: 20px; }
 
-.hero-subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.3rem);
-    margin-bottom: 40px;
-    opacity: 0.9;
-}
-
-.hero-btns { display: flex; gap: 15px; flex-wrap: wrap; }
-
-/* ===== SERVICES SECTION ===== */
-#services { padding: 100px 5%; background: var(--white); }
-
+/* ===== 5. SERVICES GRID ===== */
+#services { padding: 100px 5%; }
 .services-grid {
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-  gap: 25px; 
-  margin-top: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+  gap: 25px;
 }
-
-.service-card {
-  border: 1px solid var(--light-gray); padding: 40px;
-  background: white; transition: 0.3s;
-}
+.service-card { border: 1px solid var(--light-gray); padding: 40px; background: white; transition: 0.3s; }
 .service-card:hover { border-color: var(--brand-red); transform: translateY(-5px); }
 
-/* ===== STICKY EXPERIENCE (Process/Product Images) ===== */
-#sticky-experience {
-    padding: 120px 10%;
-    background: white;
-}
-
-.sticky-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 80px;
-    margin-bottom: 180px;
-}
-
-.sticky-row.reverse { flex-direction: row-reverse; }
-
-.sticky-media {
-    flex: 1;
-    position: sticky;
-    top: 120px;
-}
-
-.sticky-media img {
-    width: 100%;
-    height: 450px;
-    object-fit: cover;
-    border-radius: 2px;
-}
-
-.sticky-content {
-    flex: 1;
-    padding-top: 60px;
-}
-
-.sticky-content .tag {
-    color: var(--brand-red);
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.sticky-content h2 {
-    font-family: 'DM Serif Display';
-    font-size: clamp(2rem, 4vw, 3rem);
-    margin-bottom: 25px;
-}
-
-.sticky-content p {
-    color: var(--gray);
-    font-size: 1.1rem;
-    line-height: 1.8;
-}
-
-/* ===== CONTACT SECTION (Fixed Form Layout) ===== */
-#contact { padding: 100px 5%; background: #fff; }
-
-.contact-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 60px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.contact-info, .contact-form-wrapper {
-    flex: 1;
-    min-width: 300px;
-}
+/* ===== 6. CONTACT & FORM ===== */
+#contact { padding: 100px 5%; background: white; border-top: 1px solid var(--light-gray); }
+.contact-container { display: flex; flex-wrap: wrap; gap: 60px; max-width: 1200px; margin: 0 auto; }
+.contact-info, .contact-form-wrapper { flex: 1; min-width: 320px; }
 
 input, textarea { 
-    width: 100%; 
-    padding: 14px; 
-    margin-bottom: 15px; 
-    border: 1px solid var(--light-gray); 
-    font-family: 'DM Sans', sans-serif;
-    display: block;
-    background: white;
+    width: 100%; padding: 15px; margin-bottom: 20px; 
+    border: 1px solid var(--light-gray); background: white;
+    font-size: 1rem;
 }
-
 input:focus, textarea:focus { border-color: var(--brand-red); outline: none; }
 
-/* ===== BUTTONS ===== */
+/* ===== 7. BUTTONS ===== */
 .btn {
-  padding: 14px 30px; text-decoration: none; display: inline-block;
-  font-size: 0.85rem; text-transform: uppercase; border: none;
-  background: var(--black); color: white; cursor: pointer;
-  font-weight: 600; transition: 0.3s;
-  text-align: center;
+  padding: 15px 35px; text-decoration: none; display: inline-block;
+  font-size: 0.85rem; text-transform: uppercase; font-weight: 700;
+  transition: 0.3s; cursor: pointer; text-align: center; border: none;
 }
-.btn:hover { background: var(--brand-red); transform: translateY(-2px); }
 .btn-primary { background: var(--brand-red); color: white !important; }
+.btn-primary:hover { background: #a02e23; transform: translateY(-2px); }
 .btn-outline { background: transparent; border: 2px solid white; color: white; }
-.btn-outline:hover { background: white; color: var(--black); }
+.btn-outline:hover { background: white; color: black; }
 
-/* ===== WHATSAPP ===== */
-.whatsapp-float {
-  position: fixed; width: 55px; height: 55px; bottom: 20px; right: 20px;
-  background: #25d366; color: white; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; z-index: 1000;
+/* ===== 8. RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .sticky-row, .sticky-row.reverse { flex-direction: column; gap: 30px; }
+    .sticky-media { position: relative; top: 0; }
+    .sticky-media img { height: 300px; }
+    .nav-links { display: none; }
 }
 
-/* ===== RESPONSIVE FIXES ===== */
-@media (max-width: 900px) {
-  .sticky-row, .sticky-row.reverse {
-    flex-direction: column;
-    gap: 30px;
-    margin-bottom: 100px;
-  }
-  .sticky-media { position: relative; top: 0; }
-  .sticky-media img { height: 350px; }
-  
-  .nav-links { display: none; } /* Better for mobile UX */
-  #hero { text-align: center; justify-content: center; }
-  .hero-btns { justify-content: center; }
+.whatsapp-float {
+  position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px;
+  background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000;
 }
