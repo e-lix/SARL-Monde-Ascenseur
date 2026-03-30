@@ -1,7 +1,6 @@
-/* ===== GLOBAL STYLES ===== */
 :root {
   --black: #0a0a0a;
-  --white: #f5f4f0; /* Soft off-white for a luxury feel */
+  --white: #f5f4f0; 
   --accent: #c8a96e;
   --brand-red: #c0392b;
   --gray: #6b6b6b;
@@ -24,8 +23,14 @@ nav {
   position: fixed; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
   padding: 15px 5%; background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px); z-index: 100;
+  backdrop-filter: blur(10px); z-index: 1000;
   border-bottom: 1px solid var(--light-gray);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .nav-logo { font-family: 'DM Serif Display'; font-size: 1.1rem; text-decoration: none; color: black; }
@@ -40,25 +45,74 @@ nav {
 
 .nav-links a:hover, .nav-links a.active { color: var(--brand-red); }
 
-/* ===== TYPOGRAPHY & SECTIONS ===== */
-section { padding: 100px 5%; }
+/* Top Right Call Button */
+.btn-call-nav {
+    background: var(--brand-red);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    transition: 0.3s;
+    white-space: nowrap;
+}
 
-.hero-title, .page-title { 
+/* ===== HERO SECTION ===== */
+#hero {
+    position: relative;
+    height: 90vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    /* Update the URL below with your actual image path */
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('https://unsplash.com');
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.hero-title { 
+    font-family: 'DM Serif Display'; 
+    font-size: clamp(2.5rem, 5vw, 4.5rem); 
+    line-height: 1.1; 
+    margin-bottom: 20px; 
+    text-transform: capitalize;
+}
+
+.hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    margin-bottom: 40px;
+    opacity: 0.9;
+    max-width: 600px;
+}
+
+.hero-btns {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* ===== TYPOGRAPHY & SECTIONS ===== */
+section { padding: 80px 5%; }
+
+.page-title { 
     font-family: 'DM Serif Display'; 
     font-size: 3rem; 
     line-height: 1.1; 
     margin-bottom: 20px; 
 }
 
-/* Common style for sub-page headers */
-.page-header-section {
-    padding: 140px 5% 40px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
 /* ===== GRID SYSTEMS ===== */
-/* Index Services Grid */
 .services-grid {
   display: grid; 
   grid-template-columns: 1fr; 
@@ -72,22 +126,6 @@ section { padding: 100px 5%; }
 }
 .service-card:hover { border-color: var(--brand-red); transform: translateY(-5px); }
 
-/* Products Catalog Layout */
-.main-catalog { 
-    display: flex; 
-    flex-direction: column; /* Stack on mobile */
-    padding: 20px 5% 60px; 
-    max-width: 1400px; 
-    margin: 0 auto; 
-    gap: 40px;
-}
-
-.product-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-    gap: 25px; 
-}
-
 /* ===== BUTTONS & FORMS ===== */
 .btn {
   padding: 14px 25px; text-decoration: none; display: inline-block;
@@ -97,7 +135,13 @@ section { padding: 100px 5%; }
 }
 .btn:hover { background: var(--brand-red); transform: translateY(-2px); }
 
-.btn-primary { background: var(--brand-red); }
+.btn-primary { background: var(--brand-red); color: white !important; }
+
+.btn-outline {
+    border: 2px solid white;
+    color: white;
+}
+.btn-outline:hover { background: white; color: var(--black); }
 
 input, textarea { 
     width: 100%; padding: 12px; margin-bottom: 10px; 
@@ -111,22 +155,17 @@ input, textarea {
   display: flex; align-items: center; justify-content: center; z-index: 1000;
   transition: 0.3s;
 }
-.whatsapp-float:hover { transform: scale(1.1); }
 
 /* ===== DESKTOP OVERRIDES ===== */
 @media (min-width: 900px) {
-  .hero-title, .page-title { font-size: 4.5rem; }
-  
   .services-grid { grid-template-columns: repeat(3, 1fr); }
-  
   .contact-container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
-  
-  nav { padding: 20px 60px; }
+  nav { padding: 20px 5%; }
   .nav-logo { font-size: 1.3rem; }
   .nav-links { gap: 30px; }
-  .nav-links a { font-size: 0.85rem; }
+  .btn-call-nav { padding: 10px 20px; font-size: 0.85rem; }
+}
 
-  /* Side-by-side catalog for desktop */
-  .main-catalog { flex-direction: row; }
-  .sidebar { width: 250px; flex-shrink: 0; }
+@media (max-width: 600px) {
+    .nav-links { display: none; } /* Hide menu on small mobile to fit call button */
 }
