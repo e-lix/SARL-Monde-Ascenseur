@@ -4,129 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Composants - Monde Ascenseur</title>
-    <style>
-        .main-catalog { 
-            display: flex; 
-            padding: 140px 5% 60px; 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            gap: 40px;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar { width: 250px; flex-shrink: 0; }
-        
-        .side-menu {
-            list-style: none;
-            padding: 0;
-            border: 1px solid #eee;
-            border-radius: 4px;
-        }
-
-        .side-menu li {
-            border-bottom: 1px solid #eee;
-            padding: 15px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            color: #444;
-            display: flex;
-            justify-content: space-between;
-            background: #f9f9f9;
-        }
-
-        .side-menu li:hover { color: var(--brand-red); background: white; }
-        .side-menu li.active { background: #444; color: white; }
-
-        /* Product Grid */
-        .content-area { flex-grow: 1; }
-        .product-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; 
-        }
-
-        .product-card {
-            background: white;
-            border: 1px solid #eee;
-            padding: 20px;
-            text-align: left;
-            transition: 0.3s;
-        }
-
-        .product-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-
-        .img-placeholder {
-            background: #f4f4f4;
-            height: 200px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .product-tag { color: var(--brand-red); font-weight: bold; font-size: 0.9rem; }
-        .product-name { font-family: 'DM Serif Display'; font-size: 1.4rem; margin: 5px 0; }
-        .specs { font-size: 0.85rem; color: #777; margin-bottom: 15px; }
-
-        @media (max-width: 768px) {
-            .main-catalog { flex-direction: column; }
-            .sidebar { width: 100%; }
-        }
-    </style>
+    <title>À Propos - Monde Ascenseur</title>
 </head>
 <body>
+    <section style="padding:140px 5% 60px;">
+        <h1 class="hero-title">Qui sommes-nous ?</h1>
+        <p style="max-width:800px; line-height:1.6; font-size:1.1rem; color:var(--gray);">
+            SARL Monde Ascenseur est une entreprise basée à <strong>Oran</strong>, spécialisée dans l'ingénierie du transport vertical. 
+            Sous la direction de <strong>AIT MECHDAL Nour eddine</strong>, nous nous engageons à fournir des solutions de levage 
+            sécurisées, modernes et durables pour le marché algérien.
+        </p>
 
-<nav>
-    <a href="index.html" class="nav-logo">
-        <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
-    </a>
-    <ul class="nav-links">
-        <li><a href="index.html">Accueil</a></li>
-        <li><a href="produits.html" class="active">Produits</a></li>
-        <li><a href="a-propos.html">À Propos</a></li>
-    </ul>
-</nav>
-
-<main class="main-catalog">
-    <aside class="sidebar">
-        <ul class="side-menu">
-            <li>Gearboxes <span>⌄</span></li>
-            <li>Gearless <span>⌄</span></li>
-            <li class="active">Safety <span>⌄</span></li>
-            <li>Accessories <span>⌄</span></li>
-        </ul>
-    </aside>
-
-    <div class="content-area">
-        <h1 style="font-family: 'DM Serif Display'; color: var(--brand-red); margin-top: 0;">SAFETY</h1>
-        <hr style="border: 0; border-top: 4px solid #eee; width: 100px; margin: 20px 0 40px;">
-
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="img-placeholder">
-                   <img src="https://via.placeholder.com/200x150?text=Speed+Governor" alt="Governor">
-                </div>
-                <span class="product-tag">TAB 163.1</span>
-                <h3 class="product-name">Limiteur de Vitesse</h3>
-                <p class="specs">200 - 250 - 300 mm<br>Two-way safety</p>
-                <a href="#" style="color: black; font-weight: bold; text-decoration: none; font-size: 0.8rem;">→ FICHE TECHNIQUE</a>
-            </div>
-
-            <div class="product-card">
-                <div class="img-placeholder">
-                   <img src="https://via.placeholder.com/200x150?text=Safety+Gear" alt="Safety Gear">
-                </div>
-                <span class="product-tag">TEV200</span>
-                <h3 class="product-name">Parachute Instantané</h3>
-                <p class="specs">200 mm<br>One-way safety</p>
-                <a href="#" style="color: black; font-weight: bold; text-decoration: none; font-size: 0.8rem;">→ FICHE TECHNIQUE</a>
-            </div>
+        <div style="margin-top:60px; max-width: 500px;">
+            <h2>Notre Bureau</h2>
+            <p style="margin-bottom: 5px;">Es-Senia, Oran, Algérie</p>
+            <p style="margin-bottom: 20px;">Téléphone: +213 563 052 252</p>
+            
+            <a href="https://maps.app.goo.gl/3Y3hGZ2f7r7m7vU9A" target="_blank" class="btn" style="text-decoration:none; display:inline-block; background:black; color:white; padding:12px 24px; border-radius:4px; font-weight:500;">
+                📍 Ouvrir dans Google Maps
+            </a>
         </div>
-    </div>
-</main>
-
+    </section>
 </body>
 </html>
