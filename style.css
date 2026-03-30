@@ -1,0 +1,73 @@
+/* ===== GLOBAL STYLES ===== */
+:root {
+  --black: #0a0a0a;
+  --white: #f5f4f0;
+  --accent: #c8a96e;
+  --brand-red: #c0392b;
+  --gray: #6b6b6b;
+  --light-gray: #e8e7e3;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  line-height: 1.6;
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 60px; background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px); z-index: 100;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.nav-logo { font-family: 'DM Serif Display'; font-size: 1.3rem; text-decoration: none; color: black; }
+.logo-red { color: var(--brand-red); }
+
+.nav-links { display: flex; gap: 25px; list-style: none; }
+.nav-links a {
+  text-decoration: none; color: var(--gray);
+  font-size: 0.8rem; text-transform: uppercase; font-weight: 600;
+  transition: 0.3s;
+}
+.nav-links a:hover { color: black; }
+
+/* ===== BUTTONS & CARDS ===== */
+.btn {
+  padding: 16px 30px; text-decoration: none; display: inline-block;
+  font-size: 0.85rem; text-transform: uppercase; transition: 0.3s;
+}
+.btn-primary { background: black; color: white; border: none; cursor: pointer; }
+.btn-primary:hover { background: var(--accent); transform: translateY(-3px); }
+
+.services-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px; margin-top: 40px;
+}
+
+.service-card {
+  border: 1px solid var(--light-gray); padding: 40px;
+  background: white; transition: 0.4s ease;
+}
+.service-card:hover { transform: translateY(-10px); border-color: var(--accent); }
+
+/* ===== WHATSAPP ===== */
+.whatsapp-float {
+  position: fixed; width: 60px; height: 60px; bottom: 30px; right: 30px;
+  background: #25d366; color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  nav { padding: 15px 20px; flex-direction: column; gap: 10px; }
+  .nav-links { gap: 15px; }
+  section { padding: 120px 20px 60px !important; }
+}
