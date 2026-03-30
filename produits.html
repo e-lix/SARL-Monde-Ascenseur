@@ -4,35 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Nos Composants - Monde Ascenseur</title>
+    <title>Composants Techniques - Monde Ascenseur</title>
     <style>
-        /* Custom styling for the collapsing lists */
-        details {
-            background: #f9f9f9;
+        .catalog-section { padding: 140px 5% 60px; max-width: 1000px; margin: 0 auto; }
+        
+        /* The Accordion Container */
+        .category-box {
             border: 1px solid #ddd;
-            border-radius: 8px;
             margin-bottom: 15px;
-            overflow: hidden;
-            transition: 0.3s;
+            border-radius: 4px;
+            background: #fff;
+            transition: all 0.3s ease;
         }
+
+        .category-box:hover { border-color: var(--brand-red); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        /* The Header (What you click) */
         summary {
-            padding: 20px;
+            padding: 20px 25px;
             font-weight: 600;
+            font-size: 1.1rem;
             cursor: pointer;
             list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         summary::-webkit-details-marker { display: none; }
-        summary::after { content: '＋'; color: var(--brand-red); font-size: 1.2rem; }
-        details[open] summary::after { content: '－'; }
+        summary::after { content: '↓'; color: #999; font-weight: bold; }
+        details[open] summary::after { content: '↑'; color: var(--brand-red); }
+        details[open] { border-left: 4px solid var(--brand-red); }
+
+        /* The Table Inside */
+        .product-list { padding: 0 25px 25px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 12px; background: #f8f8f8; font-size: 0.85rem; color: #666; }
+        td { padding: 15px 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
         
-        .product-content { padding: 20px; border-top: 1px solid #ddd; }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-        .data-table th, .data-table td { border: 1px solid #eee; padding: 10px; text-align: left; }
-        .btn-sheet { display: inline-block; padding: 5px 10px; background: #333; color: white; text-decoration: none; border-radius: 4px; font-size: 0.8rem; }
+        .pdf-link {
+            color: var(--brand-red);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pdf-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -48,79 +67,86 @@
     </ul>
 </nav>
 
-<section style="padding:140px 5% 60px; max-width: 900px; margin: 0 auto;">
-    <h1 class="hero-title">Catalogue Technique</h1>
-    <p style="margin-bottom: 40px; color: var(--gray);">Consultez nos spécifications pour moteurs et composants de sécurité.</p>
+<section class="catalog-section">
+    <h1 class="hero-title" style="margin-bottom: 10px;">Composants de Levage</h1>
+    <p style="color: #666; margin-bottom: 50px;">Sélectionnez une catégorie pour accéder aux fiches techniques et documentations.</p>
 
-    <details>
-        <summary>Moteurs avec Réducteur (Gearbox)</summary>
-        <div class="product-content">
-            <p>Moteurs robustes pour installations standards et charges lourdes.</p>
-            <table class="data-table">
-                <tr style="background:#f4f4f4;">
-                    <th>Modèle</th>
-                    <th>Charge (kg)</th>
-                    <th>Fiche Technique</th>
-                </tr>
-                <tr>
-                    <td>Moteur MR13 (Standard)</td>
-                    <td>320 - 630 kg</td>
-                    <td><a href="pdfs/gearbox-mr13.pdf" class="btn-sheet">Télécharger PDF</a></td>
-                </tr>
-                <tr>
-                    <td>Moteur MR21 (Heavy Duty)</td>
-                    <td>800 - 1000 kg</td>
-                    <td><a href="#" class="btn-sheet">Télécharger PDF</a></td>
-                </tr>
+    <details class="category-box">
+        <summary>Gearboxes (Moteurs avec Réducteur)</summary>
+        <div class="product-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Modèle / Type</th>
+                        <th>Charge Max</th>
+                        <th>Documentation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Moteur MR13</strong> (Standard)</td>
+                        <td>630 kg</td>
+                        <td><a href="pdfs/mr13.pdf" target="_blank" class="pdf-link">📄 Data Sheet PDF</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Moteur MR21</strong> (Heavy Duty)</td>
+                        <td>1000 kg</td>
+                        <td><a href="#" class="pdf-link">📄 Data Sheet PDF</a></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </details>
 
-    <details>
-        <summary>Moteurs sans Réducteur (Gearless)</summary>
-        <div class="product-content">
-            <p>Technologie synchrone à aimants permanents pour haute efficacité énergétique.</p>
-            <table class="data-table">
-                <tr style="background:#f4f4f4;">
-                    <th>Type</th>
-                    <th>Vitesse</th>
-                    <th>Fiche Technique</th>
-                </tr>
-                <tr>
-                    <td>Gearless Slim Line</td>
-                    <td>1.0 - 2.0 m/s</td>
-                    <td><a href="#" class="btn-sheet">Télécharger PDF</a></td>
-                </tr>
+    <details class="category-box">
+        <summary>Gearless (Moteurs Haute Performance)</summary>
+        <div class="product-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technologie</th>
+                        <th>Vitesse</th>
+                        <th>Documentation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Série Synchrone GT</strong></td>
+                        <td>1.0 - 2.5 m/s</td>
+                        <td><a href="#" class="pdf-link">📄 Data Sheet PDF</a></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </details>
 
-    <details>
-        <summary>Composants de Sécurité</summary>
-        <div class="product-content">
-            <p>Parachutes, limiteurs de vitesse et amortisseurs certifiés.</p>
-            <table class="data-table">
-                <tr>
-                    <td>Parachutes bidirectionnels</td>
-                    <td><a href="#" class="btn-sheet">Data Sheet</a></td>
-                </tr>
-                <tr>
-                    <td>Limiteurs de vitesse OS-1</td>
-                    <td><a href="#" class="btn-sheet">Data Sheet</a></td>
-                </tr>
+    <details class="category-box">
+        <summary>Safety (Sécurité & Freins)</summary>
+        <div class="product-list">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Composant</th>
+                        <th>Certification</th>
+                        <th>Documentation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Parachutes Bidirectionnels</td>
+                        <td>EN 81-20/50</td>
+                        <td><a href="#" class="pdf-link">📄 Technical Manual</a></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </details>
 
-    <details>
-        <summary>Accessoires & Fixations</summary>
-        <div class="product-content">
-            <p>Câbles de traction, poulies et supports de guidage.</p>
-            <ul style="line-height: 2;">
-                <li>Câbles en acier certifiés ISO <a href="#" style="color:var(--brand-red); font-size:0.8rem;">[Fiche]</a></li>
-                <li>Supports de guides renforcés <a href="#" style="color:var(--brand-red); font-size:0.8rem;">[Fiche]</a></li>
-            </ul>
-        </div>
+    <details class="category-box">
+        <summary>Accessories (Fixations & Câbles)</summary>
+        <div class="product-list">
+            <p style="color:#666; padding: 10px 0;">Câbles de traction, poulies et supports de guides certifiés.</p>
+            </div>
     </details>
 
 </section>
