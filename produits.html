@@ -1,155 +1,81 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Composants Techniques - Monde Ascenseur</title>
-    <style>
-        .catalog-section { padding: 140px 5% 60px; max-width: 1000px; margin: 0 auto; }
-        
-        /* The Accordion Container */
-        .category-box {
-            border: 1px solid #ddd;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            background: #fff;
-            transition: all 0.3s ease;
-        }
-
-        .category-box:hover { border-color: var(--brand-red); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-
-        /* The Header (What you click) */
-        summary {
-            padding: 20px 25px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        summary::-webkit-details-marker { display: none; }
-        summary::after { content: '↓'; color: #999; font-weight: bold; }
-        details[open] summary::after { content: '↑'; color: var(--brand-red); }
-        details[open] { border-left: 4px solid var(--brand-red); }
-
-        /* The Table Inside */
-        .product-list { padding: 0 25px 25px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 12px; background: #f8f8f8; font-size: 0.85rem; color: #666; }
-        td { padding: 15px 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-        
-        .pdf-link {
-            color: var(--brand-red);
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .pdf-link:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-
-<nav>
-    <a href="index.html" class="nav-logo">
-        <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
-    </a>
-    <ul class="nav-links">
-        <li><a href="index.html">Accueil</a></li>
-        <li><a href="produits.html" class="active">Produits</a></li>
-        <li><a href="a-propos.html">À Propos</a></li>
-    </ul>
-</nav>
-
-<section class="catalog-section">
-    <h1 class="hero-title" style="margin-bottom: 10px;">Composants de Levage</h1>
-    <p style="color: #666; margin-bottom: 50px;">Sélectionnez une catégorie pour accéder aux fiches techniques et documentations.</p>
-
-    <details class="category-box">
-        <summary>Gearboxes (Moteurs avec Réducteur)</summary>
-        <div class="product-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Modèle / Type</th>
-                        <th>Charge Max</th>
-                        <th>Documentation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Moteur MR13</strong> (Standard)</td>
-                        <td>630 kg</td>
-                        <td><a href="pdfs/mr13.pdf" target="_blank" class="pdf-link">📄 Data Sheet PDF</a></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Moteur MR21</strong> (Heavy Duty)</td>
-                        <td>1000 kg</td>
-                        <td><a href="#" class="pdf-link">📄 Data Sheet PDF</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </details>
-
-    <details class="category-box">
-        <summary>Gearless (Moteurs Haute Performance)</summary>
-        <div class="product-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Technologie</th>
-                        <th>Vitesse</th>
-                        <th>Documentation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Série Synchrone GT</strong></td>
-                        <td>1.0 - 2.5 m/s</td>
-                        <td><a href="#" class="pdf-link">📄 Data Sheet PDF</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </details>
-
-    <details class="category-box">
-        <summary>Safety (Sécurité & Freins)</summary>
-        <div class="product-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Composant</th>
-                        <th>Certification</th>
-                        <th>Documentation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Parachutes Bidirectionnels</td>
-                        <td>EN 81-20/50</td>
-                        <td><a href="#" class="pdf-link">📄 Technical Manual</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </details>
-
-    <details class="category-box">
-        <summary>Accessories (Fixations & Câbles)</summary>
-        <div class="product-list">
-            <p style="color:#666; padding: 10px 0;">Câbles de traction, poulies et supports de guides certifiés.</p>
-            </div>
-    </details>
-
-</section>
-
-</body>
-</html>
+1  <!DOCTYPE html>
+2  <html lang="fr">
+3  <head>
+4      <meta charset="UTF-8">
+5      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6      <link rel="stylesheet" href="style.css">
+7      <title>Catalogue - Monde Ascenseur</title>
+8      <style>
+9          .main-catalog { display: flex; padding: 140px 5% 60px; max-width: 1400px; margin: 0 auto; gap: 40px; }
+10         .sidebar { width: 250px; flex-shrink: 0; }
+11         .side-menu { list-style: none; padding: 0; border: 1px solid #eee; border-radius: 4px; position: sticky; top: 100px; }
+12         .side-menu li { border-bottom: 1px solid #eee; padding: 15px 20px; cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; color: #444; background: #f9f9f9; transition: 0.3s; }
+13         .side-menu li:hover { color: #e63946; background: white; }
+14         .side-menu a { text-decoration: none; color: inherit; display: block; }
+15
+16         .content-area { flex-grow: 1; }
+17         .cat-title { font-family: 'DM Serif Display', serif; color: #e63946; font-size: 2.5rem; margin: 60px 0 10px; }
+18         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 80px; }
+19         .product-card { background: white; border: 1px solid #eee; padding: 25px; display: flex; flex-direction: column; transition: 0.3s; }
+20         .product-card:hover { border-color: #e63946; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+21         .specs-container { background: #fdfdfd; border: 1px solid #f0f0f0; padding: 12px; margin: 15px 0; border-radius: 4px; }
+22         .specs-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
+23         .specs-table td { padding: 6px 0; border-bottom: 1px solid #f4f4f4; }
+24         .specs-table td:last-child { text-align: right; font-weight: 600; }
+25         .product-img { width: 100%; height: auto; margin-top: auto; }
+26     </style>
+27 </head>
+28 <body>
+29
+30 <nav>
+31     <a href="index.html" class="nav-logo"><span>SARL Monde</span> <span style="color:#e63946;">Ascenseur</span></a>
+32     <ul style="display:flex; list-style:none; gap:20px;">
+33         <li><a href="index.html">Accueil</a></li>
+34         <li><a href="produits.html">Produits</a></li>
+35     </ul>
+36 </nav>
+37
+38 <main class="main-catalog">
+39     <aside class="sidebar">
+40         <ul class="side-menu">
+41             <li><a href="#gearbox">Gearbox</a></li>
+42             <li><a href="#gearless">Gearless</a></li>
+43             <li><a href="#safety">Safety</a></li>
+44             <li><a href="#access">Attachments</a></li>
+45         </ul>
+46     </aside>
+47
+48     <div class="content-area">
+49         50         <h1 id="gearbox" class="cat-title">GEARBOX</h1>
+51         <div class="product-grid">
+52             <div class="product-card">
+53                 <span style="color:#e63946; font-size:0.7rem; font-weight:bold;">REF: M73</span>
+54                 <h3 style="margin:5px 0;">Moteur M73</h3>
+55                 <div class="specs-container">
+56                     <table class="specs-table">
+57                         <tr><td>Charge</td><td>450 kg</td></tr>
+58                         <tr><td>Vitesse</td><td>1.0 m/s</td></tr>
+59                     </table>
+60                 </div>
+61                 <img src="images/m73.png" class="product-img">
+62             </div>
+63             64         </div>
+65
+66         67         <h1 id="gearless" class="cat-title">GEARLESS</h1>
+68         <div class="product-grid">
+69             <div class="product-card">
+70                 <span style="color:#e63946; font-size:0.7rem; font-weight:bold;">REF: G300</span>
+71                 <h3 style="margin:5px 0;">Moteur G300</h3>
+72                 <div class="specs-container">
+73                     <table class="specs-table">
+74                         <tr><td>Charge</td><td>630 kg</td></tr>
+75                         <tr><td>Puissance</td><td>4.5 kW</td></tr>
+76                     </table>
+77                 </div>
+78                 <img src="images/g300.png" class="product-img">
+79             </div>
+80             81         </div>
+82     </div>
+83 </main>
+84 </body>
+85 </html>
