@@ -4,7 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Nos Produits - Monde Ascenseur</title>
+    <title>Nos Composants - Monde Ascenseur</title>
+    <style>
+        /* Custom styling for the collapsing lists */
+        details {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        summary {
+            padding: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '＋'; color: var(--brand-red); font-size: 1.2rem; }
+        details[open] summary::after { content: '－'; }
+        
+        .product-content { padding: 20px; border-top: 1px solid #ddd; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        .data-table th, .data-table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        .btn-sheet { display: inline-block; padding: 5px 10px; background: #333; color: white; text-decoration: none; border-radius: 4px; font-size: 0.8rem; }
+    </style>
 </head>
 <body>
 
@@ -13,51 +42,87 @@
         <span>SARL Monde</span> <span class="logo-red">Ascenseur</span>
     </a>
     <ul class="nav-links">
+        <li><a href="index.html">Accueil</a></li>
         <li><a href="produits.html" class="active">Produits</a></li>
-        <li><a href="maintenance.html">Maintenance</a></li>
         <li><a href="a-propos.html">À Propos</a></li>
     </ul>
 </nav>
 
-<section style="padding:140px 5% 60px;">
-    <h1 class="hero-title">Nos Solutions de Levage</h1>
-    <p style="color:var(--gray); margin-bottom: 40px;">Une gamme complète adaptée aux standards de sécurité algériens.</p>
+<section style="padding:140px 5% 60px; max-width: 900px; margin: 0 auto;">
+    <h1 class="hero-title">Catalogue Technique</h1>
+    <p style="margin-bottom: 40px; color: var(--gray);">Consultez nos spécifications pour moteurs et composants de sécurité.</p>
 
-    <div class="products-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-        
-        <div class="product-card" style="border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white; transition: 0.3s;">
-            <div style="height: 250px; background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc;">
-                <span>[Photo Ascenseur Résidentiel]</span>
-            </div>
-            <div style="padding: 20px;">
-                <h3 style="margin-bottom: 10px;">Ascenseurs Résidentiels</h3>
-                <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 15px;">Confort et design pour les promotions immobilières et villas.</p>
-                <ul style="font-size: 0.85rem; padding-left: 15px; color: #555;">
-                    <li>Capacité: 450kg - 1000kg</li>
-                    <li>Vitesse: 1.0 - 1.6 m/s</li>
-                    <li>Options: Gearless (Silencieux)</li>
-                </ul>
-                <a href="index.html#contact" class="btn" style="display: block; text-align: center; margin-top: 20px; border: 1px solid var(--brand-red); color: var(--brand-red); text-decoration: none; padding: 10px; border-radius: 4px;">Demander un devis</a>
-            </div>
+    <details>
+        <summary>Moteurs avec Réducteur (Gearbox)</summary>
+        <div class="product-content">
+            <p>Moteurs robustes pour installations standards et charges lourdes.</p>
+            <table class="data-table">
+                <tr style="background:#f4f4f4;">
+                    <th>Modèle</th>
+                    <th>Charge (kg)</th>
+                    <th>Fiche Technique</th>
+                </tr>
+                <tr>
+                    <td>Moteur MR13 (Standard)</td>
+                    <td>320 - 630 kg</td>
+                    <td><a href="pdfs/gearbox-mr13.pdf" class="btn-sheet">Télécharger PDF</a></td>
+                </tr>
+                <tr>
+                    <td>Moteur MR21 (Heavy Duty)</td>
+                    <td>800 - 1000 kg</td>
+                    <td><a href="#" class="btn-sheet">Télécharger PDF</a></td>
+                </tr>
+            </table>
         </div>
+    </details>
 
-        <div class="product-card" style="border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: white;">
-            <div style="height: 250px; background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc;">
-                <span>[Photo Monte-Charge]</span>
-            </div>
-            <div style="padding: 20px;">
-                <h3 style="margin-bottom: 10px;">Monte-Charges Industriels</h3>
-                <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 15px;">Robustesse pour les usines, entrepôts et centres commerciaux.</p>
-                <ul style="font-size: 0.85rem; padding-left: 15px; color: #555;">
-                    <li>Capacité: Jusqu'à 5000kg</li>
-                    <li>Structure renforcée</li>
-                    <li>Portes automatiques ou manuelles</li>
-                </ul>
-                <a href="index.html#contact" class="btn" style="display: block; text-align: center; margin-top: 20px; border: 1px solid var(--brand-red); color: var(--brand-red); text-decoration: none; padding: 10px; border-radius: 4px;">Fiche Technique</a>
-            </div>
+    <details>
+        <summary>Moteurs sans Réducteur (Gearless)</summary>
+        <div class="product-content">
+            <p>Technologie synchrone à aimants permanents pour haute efficacité énergétique.</p>
+            <table class="data-table">
+                <tr style="background:#f4f4f4;">
+                    <th>Type</th>
+                    <th>Vitesse</th>
+                    <th>Fiche Technique</th>
+                </tr>
+                <tr>
+                    <td>Gearless Slim Line</td>
+                    <td>1.0 - 2.0 m/s</td>
+                    <td><a href="#" class="btn-sheet">Télécharger PDF</a></td>
+                </tr>
+            </table>
         </div>
+    </details>
 
-    </div>
+    <details>
+        <summary>Composants de Sécurité</summary>
+        <div class="product-content">
+            <p>Parachutes, limiteurs de vitesse et amortisseurs certifiés.</p>
+            <table class="data-table">
+                <tr>
+                    <td>Parachutes bidirectionnels</td>
+                    <td><a href="#" class="btn-sheet">Data Sheet</a></td>
+                </tr>
+                <tr>
+                    <td>Limiteurs de vitesse OS-1</td>
+                    <td><a href="#" class="btn-sheet">Data Sheet</a></td>
+                </tr>
+            </table>
+        </div>
+    </details>
+
+    <details>
+        <summary>Accessoires & Fixations</summary>
+        <div class="product-content">
+            <p>Câbles de traction, poulies et supports de guidage.</p>
+            <ul style="line-height: 2;">
+                <li>Câbles en acier certifiés ISO <a href="#" style="color:var(--brand-red); font-size:0.8rem;">[Fiche]</a></li>
+                <li>Supports de guides renforcés <a href="#" style="color:var(--brand-red); font-size:0.8rem;">[Fiche]</a></li>
+            </ul>
+        </div>
+    </details>
+
 </section>
 
 </body>
