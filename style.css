@@ -36,7 +36,7 @@ p, a, li, input, textarea, span, strong {
     font-family: 'DM Sans', sans-serif;
 }
 
-/* ===== 2. NAVIGATION ===== */
+/* ===== 2. NAVIGATION (Fixed & Minimalist) ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
@@ -65,9 +65,9 @@ nav {
     justify-content: center;
     text-align: center;
     padding: 0 5%;
-    background-color: #000000; /* Fond noir pour matcher l'image */
-    background-image: url('images/logo-bg.jpg'); /* VOTRE IMAGE ICI */
-    background-size: contain; /* Garde le logo entier sans le couper */
+    background-color: #000000; /* Matching the black in your logo image */
+    background-image: url('images/logo-bg.jpg'); 
+    background-size: contain; /* Keeps the whole logo visible */
     background-position: center;
     background-repeat: no-repeat;
     color: white;
@@ -76,7 +76,7 @@ nav {
 .hero-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Assombrit pour lire le texte */
+    background: rgba(0, 0, 0, 0.4); /* Slight darkening for text readability */
     z-index: 1;
 }
 
