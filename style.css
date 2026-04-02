@@ -55,7 +55,10 @@ nav {
     flex-wrap: wrap; 
 }
 
-.logo-red { color: var(--brand-red); margin-left: 4px; }
+.logo-red { 
+    color: var(--brand-red); 
+    margin-left: 6px; /* Espacement après 'SARL' */
+}
 
 /* Conteneur Logo + Texte Fermator */
 .distributor-wrapper {
@@ -67,7 +70,7 @@ nav {
 }
 
 .fermator-mini-logo {
-    height: 24px; /* Taille augmentée pour être bien visible */
+    height: 24px; 
     width: auto;
     margin-right: 8px;
     opacity: 1;
@@ -88,7 +91,7 @@ nav {
 }
 .nav-links a:hover { color: var(--brand-red); }
 
-/* ===== 4. HERO SECTION (With Logo Background) ===== */
+/* ===== 4. HERO SECTION ===== */
 #hero {
     position: relative;
     height: 100vh;
