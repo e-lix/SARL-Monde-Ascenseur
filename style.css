@@ -1,52 +1,14 @@
-/* ===== 1. GLOBAL TYPOGRAPHY & BRAND VARS ===== */
-:root {
-  --black: #0a0a0a;
-  --white: #f5f4f0; 
-  --accent: #c8a96e;
-  --brand-red: #c0392b;
-  --gray: #6b6b6b;
-  --light-gray: #e8e7e3;
-}
-
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-    -webkit-font-smoothing: antialiased;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 300;
-  background: var(--white);
-  color: var(--black);
-  line-height: 1.7;
-}
-
-h1, h2, h3, .hero-title {
-    font-family: 'DM Serif Display', serif;
-    font-weight: 400;
-    line-height: 1.1;
-    color: var(--black);
-}
-
-p, a, li, input, textarea, span, strong {
-    font-family: 'DM Sans', sans-serif;
-}
-
-/* ===== 2. NAVIGATION (Fixed & Minimalist) ===== */
+/* ===== 2. NAVIGATION (Modifiée pour un logo plus grand) ===== */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   display: flex; justify-content: space-between; align-items: center;
-  padding: 15px 5%; background: rgba(255, 255, 255, 0.95);
+  padding: 12px 5%; background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px); z-index: 1000;
   border-bottom: 1px solid var(--light-gray);
 }
 
 .nav-logo { 
-    font-size: 1.1rem; 
+    font-size: 1.2rem; 
     text-decoration: none; 
     color: black; 
     font-weight: 700; 
@@ -60,97 +22,26 @@ nav {
 .distributor-wrapper {
     display: flex;
     align-items: center;
-    margin-left: 12px;
-    border-left: 1px solid var(--light-gray);
-    padding-left: 12px;
+    margin-left: 15px;
+    border-left: 2px solid var(--light-gray); /* Bordure un peu plus épaisse */
+    padding-left: 15px;
 }
 
 .fermator-mini-logo {
-    height: 14px;
+    height: 24px; /* Taille augmentée pour meilleure visibilité */
     width: auto;
-    margin-right: 6px;
-    opacity: 0.9;
+    margin-right: 8px;
+    opacity: 1; /* Pleine opacité pour qu'il ressorte mieux */
 }
 
 .distributor-text { 
-    font-size: 0.75rem; 
-    font-weight: 400; 
+    font-size: 0.8rem; 
+    font-weight: 500; 
     color: var(--gray); 
-    opacity: 0.8;
     white-space: nowrap;
 }
 
-.nav-links { display: flex; gap: 25px; list-style: none; }
-.nav-links a {
-  text-decoration: none; color: var(--gray);
-  font-size: 0.8rem; text-transform: uppercase; font-weight: 600;
-  transition: 0.3s;
-}
-.nav-links a:hover { color: var(--brand-red); }
-
-/* ===== 4. HERO SECTION ===== */
-#hero {
-    position: relative;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 0 5%;
-    background-color: #000000; 
-    background-image: url('images/logo-bg.jpg'); 
-    background-size: contain; 
-    background-position: center;
-    background-repeat: no-repeat;
-    color: white;
-}
-
-.hero-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.4); 
-    z-index: 1;
-}
-
-.hero-content { max-width: 850px; z-index: 2; }
-.hero-title { font-size: clamp(2.2rem, 5vw, 4rem); color: white; margin-bottom: 15px; }
-.hero-subtitle { font-size: 1.1rem; margin-bottom: 40px; opacity: 0.9; }
-
-/* ===== 5. STICKY EXPERIENCE ===== */
-#sticky-experience { padding: 120px 10%; background: white; }
-.sticky-row { display: flex; gap: 80px; margin-bottom: 120px; align-items: center; }
-.sticky-row.reverse { flex-direction: row-reverse; }
-.sticky-media { flex: 1; }
-.sticky-media img { width: 100%; height: auto; border-radius: 2px; }
-.sticky-content { flex: 1; }
-.sticky-content .tag { color: var(--brand-red); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; display: block; margin-bottom: 10px;}
-.sticky-content h2 { font-size: 2.5rem; margin-bottom: 20px; }
-
-/* ===== 6. SERVICES GRID ===== */
-#services { padding: 100px 5%; background: var(--white); }
-.services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-.service-card { border: 1px solid var(--light-gray); padding: 40px; background: white; transition: 0.3s; }
-.service-card:hover { border-color: var(--brand-red); transform: translateY(-5px); }
-
-/* ===== 7. CONTACT & FORMS ===== */
-input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid var(--light-gray); font-size: 1rem; }
-
-/* ===== 8. BUTTONS ===== */
-.btn {
-  padding: 15px 30px; text-decoration: none; display: inline-block;
-  font-size: 0.85rem; text-transform: uppercase; font-weight: 700;
-  transition: 0.3s; cursor: pointer; border: none; border-radius: 2px;
-}
-.btn-primary { background: var(--brand-red); color: white !important; }
-.btn-outline { background: transparent; border: 2px solid white; color: white; }
-.btn-outline:hover { background: white; color: black; }
-
-/* ===== 9. WHATSAPP & RESPONSIVE ===== */
-.whatsapp-float {
-  position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px;
-  background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000;
-}
-
+/* Responsif Mobile */
 @media (max-width: 900px) {
     .nav-links { display: none; }
     .nav-logo { justify-content: center; width: 100%; }
@@ -160,10 +51,8 @@ input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px s
         margin-left: 0; 
         border-left: none; 
         padding-left: 0;
-        margin-top: 4px;
+        margin-top: 8px;
     }
-    .distributor-text { font-size: 0.65rem; }
-    .fermator-mini-logo { height: 12px; }
-    
-    .sticky-row, .sticky-row.reverse { flex-direction: column; text-align: center; }
+    .fermator-mini-logo { height: 20px; } /* Légèrement plus petit sur mobile */
+    .distributor-text { font-size: 0.7rem; }
 }
