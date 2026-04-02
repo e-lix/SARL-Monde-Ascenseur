@@ -74,6 +74,10 @@ nav {
     width: auto;
     margin-right: 8px;
     opacity: 1;
+    /* FIX: This pushes the logo down to align with the text baseline */
+    vertical-align: middle; 
+    position: relative;
+    top: -1px; /* Adjust this value (1px or 2px) to nudge it perfectly */
 }
 
 .distributor-text { 
