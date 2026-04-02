@@ -70,15 +70,14 @@ nav {
 }
 
 .fermator-mini-logo {
-    height: 24px; 
+    height: 35px;       /* Made it a bit bigger as requested */
     width: auto;
-    margin-right: 8px;
-    opacity: 1;
-    /* FIX: This pushes the logo down to align with the text baseline */
-    vertical-align: middle; 
+    margin: 0 20px;    /* 0 top/bottom, 20px left/right spacing */
+    vertical-align: middle;
     position: relative;
-    top: -1px; /* Adjust this value (1px or 2px) to nudge it perfectly */
+    top: 3px;          /* Nudge it down to align perfectly */
 }
+
 
 .distributor-text { 
     font-size: 0.8rem; 
