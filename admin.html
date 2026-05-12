@@ -379,7 +379,7 @@ async function loadProducts(cat) {
             list.appendChild(el);
         });
     } catch (err) {
-        list.innerHTML = '<p class="empty-msg" style="color:var(--brand-red);">Erreur de chargement.</p>';
+        list.innerHTML = `<p class="empty-msg" style="color:var(--brand-red);">Erreur : ${err.code || err.message}</p>`;
         console.error(err);
     }
 }
