@@ -399,7 +399,9 @@ document.querySelectorAll('.btn-add').forEach(btn => {
         document.getElementById('modal-title').textContent     = 'Nouveau produit';
         document.getElementById('modal-cat-label').textContent = btn.dataset.label;
         document.getElementById('product-form').reset();
-        document.getElementById('save-error').style.display    = 'none';
+        const errEl2 = document.getElementById('save-error');
+        errEl2.style.display  = 'none';
+        errEl2.textContent    = 'Une erreur est survenue. Réessayez.';
         resetSpecs();
         clearImagePreview();
         document.getElementById('modal').classList.add('open');
@@ -477,15 +479,25 @@ document.getElementById('product-form').addEventListener('submit', async e => {
         const file = fileInput.files[0];
         if (file) {
             saveBtn.textContent = 'Upload image…';
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                method: 'POST', body: formData
-            });
-            const data = await res.json();
-            if (!data.secure_url) throw new Error('Cloudinary upload failed');
-            imageUrl = data.secure_url;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'POST', body: formData
+                });
+                const data = await res.json();
+                if (data.secure_url) {
+                    imageUrl = data.secure_url;
+                } else {
+                    const msg = data.error?.message || JSON.stringify(data);
+                    errEl.textContent = `Image non uploadée (${msg}) — produit sauvegardé sans image.`;
+                    errEl.style.display = 'block';
+                }
+            } catch (imgErr) {
+                errEl.textContent = `Erreur image : ${imgErr.message} — produit sauvegardé sans image.`;
+                errEl.style.display = 'block';
+            }
         }
 
         await db.collection('products').add({
@@ -493,9 +505,14 @@ document.getElementById('product-form').addEventListener('submit', async e => {
             name, typeLabel, specs, imageUrl,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        closeModal();
-        loadProducts(currentCat);
+        if (!imageUrl && file) {
+            loadProducts(currentCat);
+        } else {
+            closeModal();
+            loadProducts(currentCat);
+        }
     } catch (err) {
+        errEl.textContent = `Erreur : ${err.code || err.message}`;
         errEl.style.display = 'block';
         console.error(err);
     } finally {
