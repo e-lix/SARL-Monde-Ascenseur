@@ -414,7 +414,7 @@ function buildCard(p) {
 
 async function loadDynamicProducts() {
     try {
-        const snap = await db.collection('products').orderBy('createdAt','asc').get();
+        const snap = await db.collection('products').get();
         snap.forEach(docSnap => {
             const p = docSnap.data();
             const gridId = GRIDS[p.category];

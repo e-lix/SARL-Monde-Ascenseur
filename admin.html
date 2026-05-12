@@ -357,7 +357,6 @@ async function loadProducts(cat) {
     try {
         const snap = await db.collection('products')
             .where('category','==', cat)
-            .orderBy('createdAt','desc')
             .get();
         if (snap.empty) {
             list.innerHTML = '<p class="empty-msg">Aucun produit ajouté.</p>';
