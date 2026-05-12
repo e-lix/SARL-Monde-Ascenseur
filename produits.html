@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Composants & Produits | SARL Monde Ascenseur</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛗</text></svg>">
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     <style>
         /* Header Consistency */
         .page-header-section {
@@ -91,6 +92,9 @@
         <li><a href="maintenance.html">Maintenance</a></li>
         <li><a href="a-propos.html">À Propos</a></li>
     </ul>
+    <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
 </nav>
 
 <section class="page-header-section">
@@ -105,7 +109,7 @@
             <li><a href="#gearbox">Gearbox</a></li>
             <li><a href="#gearless">Gearless</a></li>
             <li><a href="#safety">Safety</a></li>
-            <li><a href="#attachments">Attachments</a></li>
+            <li><a href="#accessoires">Accessoires</a></li>
         </ul>
     </aside>
 
@@ -113,7 +117,7 @@
         
                <!-- SECTION DOORS -->
         <h2 id="doors" class="cat-subtitle">Doors</h2>
-        <div class="product-grid">
+        <div class="product-grid" id="grid-portes">
                                    <!-- Produit 1 -->
             <div class="product-card">
                 <span style="color:var(--brand-red); font-size:0.75rem; font-weight:bold; font-family:'DM Sans'; letter-spacing:1px;">TYPE: PORTE PALIÈRE</span>
@@ -206,7 +210,7 @@
             
         <!-- SECTION GEARBOX -->
         <h2 id="gearbox" class="cat-subtitle">Gearbox</h2>
-        <div class="product-grid">
+        <div class="product-grid" id="grid-gearbox">
             <div class="product-card">
                 <span style="color:var(--brand-red); font-size:0.75rem; font-weight:bold; font-family:'DM Sans'; letter-spacing:1px;">REF: M109</span>
                 <h3 style="margin:5px 0; font-family: 'DM Serif Display'; font-size: 1.8rem;">Montanari M109</h3>
@@ -268,7 +272,7 @@
 
         <!-- SECTION GEARLESS -->
         <h2 id="gearless" class="cat-subtitle">Gearless</h2>
-        <div class="product-grid">
+        <div class="product-grid" id="grid-gearless">
             <div class="product-card">
                 <span style="color:var(--brand-red); font-size:0.75rem; font-weight:bold; font-family:'DM Sans'; letter-spacing:1px;">REF: MGI27S</span>
                 <h3 style="margin:5px 0; font-family: 'DM Serif Display'; font-size: 1.8rem;">Montanari MGI27S</h3>
@@ -298,7 +302,7 @@
 
                 <!-- SECTION SAFETY -->
         <h2 id="safety" class="cat-subtitle">Safety</h2>
-        <div class="product-grid">
+        <div class="product-grid" id="grid-securite">
             
             <!-- Produit 1: Barrière Vega -->
             <div class="product-card">
@@ -344,7 +348,9 @@
 
         </div>
 
-        <h2 id="attachments" class="cat-subtitle">Attachments</h2>
+        <!-- SECTION ACCESSOIRES (dynamic only) -->
+        <h2 id="accessoires" class="cat-subtitle" id="section-accessoires-title" style="display:none;">Accessoires</h2>
+        <div class="product-grid" id="grid-accessoires"></div>
 
     </div>
 </main>
@@ -353,5 +359,85 @@
     <p style="font-size: 0.85rem; opacity: 0.8; font-family: 'DM Sans', sans-serif;">© 2026 Monde Ascenseur</p>
 </footer>
 
+<script>
+  document.querySelector('.hamburger').addEventListener('click', function() {
+    document.querySelector('.nav-links').classList.toggle('open');
+    this.classList.toggle('active');
+  });
+</script>
+
+<!-- Firebase: load dynamic products -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+// Same config as admin.html — replace with your values
+const firebaseConfig = {
+    apiKey:            "AIzaSyASCskWsoYCoLjWI36ZB9N75_NJVfZqd9k",
+    authDomain:        "websitemondeaascenseur.firebaseapp.com",
+    projectId:         "websitemondeaascenseur",
+    storageBucket:     "websitemondeaascenseur.firebasestorage.app",
+    messagingSenderId: "670306506642",
+    appId:             "1:670306506642:web:e57c33e0eef5128146934b"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Maps Firestore category → grid element id
+const GRIDS = {
+    portes:       'grid-portes',
+    gearbox:      'grid-gearbox',
+    gearless:     'grid-gearless',
+    securite:     'grid-securite',
+    accessoires:  'grid-accessoires'
+};
+
+function buildCard(p) {
+    const specsRows = (p.specs || []).map(s =>
+        `<tr><td>${esc(s.label)}</td><td>${esc(s.value)}</td></tr>`
+    ).join('');
+
+    const imgHtml = p.imageUrl
+        ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" class="product-img">`
+        : '';
+
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+        <span style="color:var(--brand-red);font-size:0.75rem;font-weight:bold;font-family:'DM Sans';letter-spacing:1px;">${esc(p.typeLabel)}</span>
+        <h3 style="margin:5px 0;font-size:1.4rem;">${esc(p.name)}</h3>
+        ${specsRows ? `<div class="specs-container"><table class="specs-table">${specsRows}</table></div>` : ''}
+        ${imgHtml}
+    `;
+    return card;
+}
+
+async function loadDynamicProducts() {
+    try {
+        const snap = await db.collection('products').orderBy('createdAt','asc').get();
+        snap.forEach(docSnap => {
+            const p = docSnap.data();
+            const gridId = GRIDS[p.category];
+            if (!gridId) return;
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            grid.appendChild(buildCard(p));
+
+            // Show the Accessoires title if there are products
+            if (p.category === 'accessoires') {
+                document.getElementById('accessoires').style.display = '';
+            }
+        });
+    } catch (err) {
+        console.warn('Firebase not configured yet:', err.message);
+    }
+}
+
+loadDynamicProducts();
+
+function esc(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Monde Ascenseur</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛗</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-red: #c0392b;
+            --black: #0a0a0a;
+            --gray: #6b6b6b;
+            --light-gray: #e8e7e3;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'DM Sans', sans-serif; background: #f0efe9; color: var(--black); line-height: 1.6; }
+
+        /* ── LOGIN ── */
+        #login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--black);
+        }
+        .login-box {
+            background: white;
+            padding: 50px;
+            width: 380px;
+        }
+        .login-logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin-bottom: 6px; }
+        .login-logo span { color: var(--brand-red); }
+        .login-sub { color: var(--gray); font-size: 0.85rem; margin-bottom: 30px; }
+        .f-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 6px; }
+        .f-input {
+            width: 100%; padding: 13px 14px; border: 1px solid var(--light-gray);
+            font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 14px;
+            transition: border-color 0.2s;
+        }
+        .f-input:focus { outline: none; border-color: var(--brand-red); }
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--brand-red); color: white;
+            border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:hover { opacity: 0.88; }
+        #login-error { color: var(--brand-red); font-size: 0.85rem; margin-top: 12px; display: none; }
+
+        /* ── ADMIN NAV ── */
+        #admin-panel { display: none; }
+        .admin-nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 5%; background: white;
+            border-bottom: 1px solid var(--light-gray); z-index: 100;
+        }
+        .admin-nav-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+        .admin-nav-title span { color: var(--brand-red); }
+        .btn-logout {
+            padding: 8px 18px; background: transparent;
+            border: 1px solid var(--light-gray); color: var(--gray);
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px;
+            transition: 0.2s;
+        }
+        .btn-logout:hover { border-color: var(--brand-red); color: var(--brand-red); }
+
+        /* ── MAIN ── */
+        .admin-main { max-width: 860px; margin: 0 auto; padding: 100px 5% 80px; }
+
+        .admin-section {
+            background: white; border: 1px solid var(--light-gray);
+            padding: 28px 30px; margin-bottom: 20px;
+        }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .section-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; }
+        .btn-add {
+            padding: 9px 18px; background: var(--brand-red); color: white;
+            border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; transition: opacity 0.2s;
+        }
+        .btn-add:hover { opacity: 0.88; }
+
+        /* ── PRODUCT LIST ITEMS ── */
+        .admin-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 11px 14px; background: #f9f9f7;
+            border: 1px solid var(--light-gray); margin-bottom: 7px;
+        }
+        .admin-item-type { display: block; font-size: 0.7rem; font-weight: 700; color: var(--brand-red); letter-spacing: 1px; }
+        .admin-item-name { font-size: 0.9rem; font-weight: 600; }
+        .btn-delete {
+            padding: 6px 13px; background: transparent;
+            border: 1px solid var(--light-gray); color: var(--gray);
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem; flex-shrink: 0; margin-left: 15px; transition: 0.2s;
+        }
+        .btn-delete:hover { border-color: var(--brand-red); color: var(--brand-red); }
+        .empty-msg { color: var(--gray); font-size: 0.88rem; padding: 12px; border: 1px dashed var(--light-gray); text-align: center; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 1000;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; width: 100%; max-width: 540px;
+            max-height: 90vh; overflow-y: auto; padding: 40px;
+        }
+        .modal-box h3 { font-family: 'DM Serif Display', serif; font-size: 1.7rem; margin-bottom: 6px; }
+        .modal-cat-label { color: var(--brand-red); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 28px; display: block; }
+        .modal-box .f-label { margin-top: 4px; }
+
+        /* specs */
+        .spec-row { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 8px; margin-bottom: 8px; }
+        .spec-row input {
+            padding: 10px 12px; border: 1px solid var(--light-gray);
+            font-family: 'DM Sans', sans-serif; font-size: 0.88rem; transition: border-color 0.2s;
+        }
+        .spec-row input:focus { outline: none; border-color: var(--brand-red); }
+        .btn-rm {
+            width: 32px; height: 100%; min-height: 38px; background: transparent;
+            border: 1px solid var(--light-gray); color: var(--gray);
+            cursor: pointer; font-size: 1.1rem; display: flex;
+            align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .btn-rm:hover { border-color: var(--brand-red); color: var(--brand-red); }
+        .btn-add-spec {
+            width: 100%; padding: 9px; background: transparent;
+            border: 1px dashed var(--light-gray); color: var(--gray);
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem; margin-bottom: 20px; transition: 0.2s;
+        }
+        .btn-add-spec:hover { border-color: var(--brand-red); color: var(--brand-red); }
+
+        .modal-actions { display: flex; gap: 10px; margin-top: 6px; }
+        .btn-save {
+            flex: 1; padding: 14px; background: var(--brand-red); color: white;
+            border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-cancel {
+            flex: 1; padding: 14px; background: transparent;
+            border: 1px solid var(--light-gray); color: var(--gray);
+            cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+        }
+        #save-error { color: var(--brand-red); font-size: 0.85rem; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-screen">
+    <div class="login-box">
+        <div class="login-logo">SARL <span>Monde Ascenseur</span></div>
+        <p class="login-sub">Panneau d'administration</p>
+        <form id="login-form">
+            <label class="f-label">Email</label>
+            <input type="email" id="email" class="f-input" placeholder="admin@exemple.com" required>
+            <label class="f-label">Mot de passe</label>
+            <input type="password" id="password" class="f-input" placeholder="••••••••" required style="margin-bottom:20px;">
+            <button type="submit" class="btn-primary">Se connecter</button>
+        </form>
+        <p id="login-error">Email ou mot de passe incorrect.</p>
+    </div>
+</div>
+
+<!-- ══════════════ ADMIN PANEL ══════════════ -->
+<div id="admin-panel">
+    <nav class="admin-nav">
+        <div class="admin-nav-title">Admin — <span>Monde Ascenseur</span></div>
+        <button id="logout-btn" class="btn-logout">Déconnexion</button>
+    </nav>
+
+    <main class="admin-main">
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h2>Portes</h2>
+                <button class="btn-add" data-cat="portes" data-label="Portes">+ Ajouter</button>
+            </div>
+            <div class="product-list" id="list-portes"></div>
+        </div>
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h2>Gearbox</h2>
+                <button class="btn-add" data-cat="gearbox" data-label="Gearbox">+ Ajouter</button>
+            </div>
+            <div class="product-list" id="list-gearbox"></div>
+        </div>
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h2>Gearless</h2>
+                <button class="btn-add" data-cat="gearless" data-label="Gearless">+ Ajouter</button>
+            </div>
+            <div class="product-list" id="list-gearless"></div>
+        </div>
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h2>Sécurité</h2>
+                <button class="btn-add" data-cat="securite" data-label="Sécurité">+ Ajouter</button>
+            </div>
+            <div class="product-list" id="list-securite"></div>
+        </div>
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h2>Accessoires</h2>
+                <button class="btn-add" data-cat="accessoires" data-label="Accessoires">+ Ajouter</button>
+            </div>
+            <div class="product-list" id="list-accessoires"></div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ══════════════ ADD PRODUCT MODAL ══════════════ -->
+<div id="modal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 id="modal-title">Nouveau produit</h3>
+        <span class="modal-cat-label" id="modal-cat-label"></span>
+
+        <form id="product-form">
+            <label class="f-label">Libellé badge (texte rouge)</label>
+            <input type="text" id="form-type-label" class="f-input" placeholder="TYPE: PORTE PALIÈRE" required>
+
+            <label class="f-label">Nom du produit</label>
+            <input type="text" id="form-name" class="f-input" placeholder="P.P.FERMA.700 2VL GAUCHE INOX" required>
+
+            <label class="f-label" style="margin-bottom:10px;">Spécifications</label>
+            <div id="specs-container"></div>
+            <button type="button" class="btn-add-spec" id="add-spec-btn">+ Ajouter une ligne</button>
+
+            <label class="f-label">Image — chemin ou URL (optionnel)</label>
+            <input type="text" id="form-image" class="f-input" placeholder="images/mon-produit.jpg">
+
+            <p id="save-error">Une erreur est survenue. Réessayez.</p>
+
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">Enregistrer</button>
+                <button type="button" class="btn-cancel" id="cancel-btn">Annuler</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// FIREBASE CONFIG
+// Replace with your own values from Firebase Console:
+// console.firebase.google.com → Project Settings → Your apps
+// ══════════════════════════════════════════════════════════
+const firebaseConfig = {
+    apiKey:            "AIzaSyASCskWsoYCoLjWI36ZB9N75_NJVfZqd9k",
+    authDomain:        "websitemondeaascenseur.firebaseapp.com",
+    projectId:         "websitemondeaascenseur",
+    storageBucket:     "websitemondeaascenseur.firebasestorage.app",
+    messagingSenderId: "670306506642",
+    appId:             "1:670306506642:web:e57c33e0eef5128146934b"
+};
+// ══════════════════════════════════════════════════════════
+
+firebase.initializeApp(firebaseConfig);
+const db   = firebase.firestore();
+const auth = firebase.auth();
+
+// ── AUTH ──
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-panel').style.display  = 'block';
+        loadAll();
+    } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('admin-panel').style.display  = 'none';
+    }
+});
+
+document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const errEl = document.getElementById('login-error');
+    errEl.style.display = 'none';
+    try {
+        await auth.signInWithEmailAndPassword(
+            document.getElementById('email').value,
+            document.getElementById('password').value
+        );
+    } catch {
+        errEl.style.display = 'block';
+    }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
+
+// ── LOAD ──
+const CATS = ['portes','gearbox','gearless','securite','accessoires'];
+
+function loadAll() { CATS.forEach(loadProducts); }
+
+async function loadProducts(cat) {
+    const list = document.getElementById('list-' + cat);
+    list.innerHTML = '';
+    try {
+        const snap = await db.collection('products')
+            .where('category','==', cat)
+            .orderBy('createdAt','desc')
+            .get();
+        if (snap.empty) {
+            list.innerHTML = '<p class="empty-msg">Aucun produit ajouté.</p>';
+            return;
+        }
+        snap.forEach(docSnap => {
+            const p = docSnap.data();
+            const el = document.createElement('div');
+            el.className = 'admin-item';
+            el.innerHTML = `
+                <div>
+                    <span class="admin-item-type">${esc(p.typeLabel)}</span>
+                    <span class="admin-item-name">${esc(p.name)}</span>
+                </div>
+                <button class="btn-delete" data-id="${docSnap.id}" data-cat="${cat}">Supprimer</button>
+            `;
+            el.querySelector('.btn-delete').addEventListener('click', () =>
+                deleteProduct(docSnap.id, cat)
+            );
+            list.appendChild(el);
+        });
+    } catch (err) {
+        list.innerHTML = '<p class="empty-msg" style="color:var(--brand-red);">Erreur de chargement.</p>';
+        console.error(err);
+    }
+}
+
+async function deleteProduct(id, cat) {
+    if (!confirm('Supprimer ce produit définitivement ?')) return;
+    await db.collection('products').doc(id).delete();
+    loadProducts(cat);
+}
+
+// ── MODAL ──
+let currentCat = null;
+
+document.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentCat = btn.dataset.cat;
+        document.getElementById('modal-title').textContent     = 'Nouveau produit';
+        document.getElementById('modal-cat-label').textContent = btn.dataset.label;
+        document.getElementById('product-form').reset();
+        document.getElementById('save-error').style.display    = 'none';
+        resetSpecs();
+        document.getElementById('modal').classList.add('open');
+    });
+});
+
+document.getElementById('cancel-btn').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal')) closeModal();
+});
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+// ── SPECS ──
+function resetSpecs() {
+    document.getElementById('specs-container').innerHTML = '';
+    appendSpecRow();
+}
+
+function appendSpecRow(lbl = '', val = '') {
+    const row = document.createElement('div');
+    row.className = 'spec-row';
+    row.innerHTML = `
+        <input type="text" class="spec-label" placeholder="Caractéristique" value="${esc(lbl)}">
+        <input type="text" class="spec-value" placeholder="Valeur" value="${esc(val)}">
+        <button type="button" class="btn-rm" title="Supprimer">×</button>
+    `;
+    row.querySelector('.btn-rm').addEventListener('click', () => row.remove());
+    document.getElementById('specs-container').appendChild(row);
+}
+
+document.getElementById('add-spec-btn').addEventListener('click', () => appendSpecRow());
+
+// ── SAVE ──
+document.getElementById('product-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const errEl = document.getElementById('save-error');
+    errEl.style.display = 'none';
+
+    const name      = document.getElementById('form-name').value.trim();
+    const typeLabel = document.getElementById('form-type-label').value.trim().toUpperCase();
+    const imageUrl  = document.getElementById('form-image').value.trim();
+
+    const specs = [];
+    document.querySelectorAll('.spec-row').forEach(row => {
+        const l = row.querySelector('.spec-label').value.trim();
+        const v = row.querySelector('.spec-value').value.trim();
+        if (l || v) specs.push({ label: l, value: v });
+    });
+
+    try {
+        await db.collection('products').add({
+            category: currentCat,
+            name, typeLabel, specs, imageUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal();
+        loadProducts(currentCat);
+    } catch (err) {
+        errEl.style.display = 'block';
+        console.error(err);
+    }
+});
+
+function esc(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
