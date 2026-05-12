@@ -155,6 +155,24 @@
             cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
         }
         #save-error { color: var(--brand-red); font-size: 0.85rem; margin-top: 10px; display: none; }
+
+        /* image upload */
+        .img-upload-area {
+            border: 1px dashed var(--light-gray); padding: 22px;
+            text-align: center; cursor: pointer; transition: border-color 0.2s;
+            margin-bottom: 18px; position: relative; border-radius: 2px;
+        }
+        .img-upload-area:hover { border-color: var(--brand-red); }
+        .img-upload-area input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .img-upload-label { font-size: 0.85rem; color: var(--gray); pointer-events: none; }
+        .img-upload-label strong { display: block; color: var(--black); margin-bottom: 4px; font-size: 0.9rem; }
+        #img-preview {
+            width: 100%; max-height: 140px; object-fit: contain;
+            margin-top: 12px; display: none; border-radius: 2px;
+        }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -244,8 +262,15 @@
             <div id="specs-container"></div>
             <button type="button" class="btn-add-spec" id="add-spec-btn">+ Ajouter une ligne</button>
 
-            <label class="f-label">Image — chemin ou URL (optionnel)</label>
-            <input type="text" id="form-image" class="f-input" placeholder="images/mon-produit.jpg">
+            <label class="f-label">Image (optionnel)</label>
+            <div class="img-upload-area" id="upload-area">
+                <input type="file" id="form-image-file" accept="image/*">
+                <div class="img-upload-label">
+                    <strong>Cliquez pour choisir une image</strong>
+                    JPG, PNG, WEBP — max 5 Mo
+                </div>
+                <img id="img-preview" alt="Aperçu">`
+            </div>
 
             <p id="save-error">Une erreur est survenue. Réessayez.</p>
 
@@ -261,6 +286,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
 <script>
 // ══════════════════════════════════════════════════════════
@@ -279,8 +305,9 @@ const firebaseConfig = {
 // ══════════════════════════════════════════════════════════
 
 firebase.initializeApp(firebaseConfig);
-const db   = firebase.firestore();
-const auth = firebase.auth();
+const db      = firebase.firestore();
+const auth    = firebase.auth();
+const storage = firebase.storage();
 
 // ── AUTH ──
 auth.onAuthStateChanged(user => {
@@ -366,6 +393,7 @@ document.querySelectorAll('.btn-add').forEach(btn => {
         document.getElementById('product-form').reset();
         document.getElementById('save-error').style.display    = 'none';
         resetSpecs();
+        clearImagePreview();
         document.getElementById('modal').classList.add('open');
     });
 });
@@ -374,7 +402,28 @@ document.getElementById('cancel-btn').addEventListener('click', closeModal);
 document.getElementById('modal').addEventListener('click', e => {
     if (e.target === document.getElementById('modal')) closeModal();
 });
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    clearImagePreview();
+}
+
+// ── IMAGE PREVIEW ──
+document.getElementById('form-image-file').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const preview = document.getElementById('img-preview');
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    document.querySelector('.img-upload-label strong').textContent = file.name;
+});
+
+function clearImagePreview() {
+    const preview = document.getElementById('img-preview');
+    preview.src = '';
+    preview.style.display = 'none';
+    document.querySelector('.img-upload-label strong').textContent = 'Cliquez pour choisir une image';
+    document.getElementById('form-image-file').value = '';
+}
 
 // ── SPECS ──
 function resetSpecs() {
@@ -399,14 +448,15 @@ document.getElementById('add-spec-btn').addEventListener('click', () => appendSp
 // ── SAVE ──
 document.getElementById('product-form').addEventListener('submit', async e => {
     e.preventDefault();
-    const errEl = document.getElementById('save-error');
-    errEl.style.display = 'none';
+    const errEl   = document.getElementById('save-error');
+    const saveBtn = document.querySelector('.btn-save');
+    errEl.style.display  = 'none';
+    saveBtn.disabled     = true;
+    saveBtn.textContent  = 'Enregistrement…';
 
     const name      = document.getElementById('form-name').value.trim();
     const typeLabel = document.getElementById('form-type-label').value.trim().toUpperCase();
-    const imageUrl  = document.getElementById('form-image').value.trim();
-
-    const specs = [];
+    const specs     = [];
     document.querySelectorAll('.spec-row').forEach(row => {
         const l = row.querySelector('.spec-label').value.trim();
         const v = row.querySelector('.spec-value').value.trim();
@@ -414,6 +464,16 @@ document.getElementById('product-form').addEventListener('submit', async e => {
     });
 
     try {
+        let imageUrl = '';
+        const fileInput = document.getElementById('form-image-file');
+        const file = fileInput.files[0];
+        if (file) {
+            saveBtn.textContent = 'Upload image…';
+            const ref = storage.ref(`products/${Date.now()}_${file.name}`);
+            await ref.put(file);
+            imageUrl = await ref.getDownloadURL();
+        }
+
         await db.collection('products').add({
             category: currentCat,
             name, typeLabel, specs, imageUrl,
@@ -424,6 +484,9 @@ document.getElementById('product-form').addEventListener('submit', async e => {
     } catch (err) {
         errEl.style.display = 'block';
         console.error(err);
+    } finally {
+        saveBtn.disabled    = false;
+        saveBtn.textContent = 'Enregistrer';
     }
 });
 
