@@ -286,7 +286,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 
 <script>
 // ══════════════════════════════════════════════════════════
@@ -304,10 +303,20 @@ const firebaseConfig = {
 };
 // ══════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════
+// CLOUDINARY CONFIG (free image hosting — cloudinary.com)
+// 1. Sign up free at cloudinary.com
+// 2. Dashboard → Settings → Upload → Upload presets → Add preset
+//    Set signing mode to "Unsigned" → Save
+// 3. Fill in your Cloud Name and the preset name below
+// ══════════════════════════════════════════════════════════
+const CLOUDINARY_CLOUD_NAME   = "YOUR_CLOUD_NAME";
+const CLOUDINARY_UPLOAD_PRESET = "YOUR_UPLOAD_PRESET";
+// ══════════════════════════════════════════════════════════
+
 firebase.initializeApp(firebaseConfig);
-const db      = firebase.firestore();
-const auth    = firebase.auth();
-const storage = firebase.storage();
+const db   = firebase.firestore();
+const auth = firebase.auth();
 
 // ── AUTH ──
 auth.onAuthStateChanged(user => {
@@ -469,9 +478,15 @@ document.getElementById('product-form').addEventListener('submit', async e => {
         const file = fileInput.files[0];
         if (file) {
             saveBtn.textContent = 'Upload image…';
-            const ref = storage.ref(`products/${Date.now()}_${file.name}`);
-            await ref.put(file);
-            imageUrl = await ref.getDownloadURL();
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST', body: formData
+            });
+            const data = await res.json();
+            if (!data.secure_url) throw new Error('Cloudinary upload failed');
+            imageUrl = data.secure_url;
         }
 
         await db.collection('products').add({
