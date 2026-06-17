@@ -85,6 +85,16 @@
         .pdf-stage canvas { display: block; }
         #pdf-canvas { background: white; }
         #overlay-canvas { position: absolute; top: 0; left: 0; cursor: crosshair; }
+        /* Invisible input pinned to the last-clicked spot. We focus this
+           instead of the sidebar input so typing never triggers a
+           scroll-into-view jump — the focused element is already exactly
+           where the user is looking. Width covers a typical field so
+           pasting also works without trimming. */
+        #floating-input {
+            position: absolute; opacity: 0; border: none; background: transparent;
+            outline: none; padding: 0; margin: 0; width: 240px; height: 28px;
+            font-size: 16px; caret-color: transparent; z-index: 5;
+        }
 
         .pdf-toolbar {
             display: flex; align-items: center; justify-content: space-between;
@@ -211,6 +221,7 @@
                     <div class="pdf-stage" id="pdf-stage">
                         <canvas id="pdf-canvas"></canvas>
                         <canvas id="overlay-canvas"></canvas>
+                        <input id="floating-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                     </div>
                 </div>
 
@@ -458,6 +469,8 @@ async function renderPage(num) {
 // defaults to a third of the page width — they'll resize later
 // (Phase 2).
 // ══════════════════════════════════════════════════════════
+const floatingInput = document.getElementById('floating-input');
+
 overlayCanvas.addEventListener('click', e => {
     if (!state.pdfDoc) return;
     const rect = overlayCanvas.getBoundingClientRect();
@@ -488,14 +501,42 @@ overlayCanvas.addEventListener('click', e => {
     state.activeFieldId = id;
     renderFieldsList();
     drawOverlay();
-    // Focus the new field's value input so user can type immediately.
-    // preventScroll: true keeps the page anchored at the PDF — without it
-    // the browser auto-scrolls to bring the sidebar input into view, which
-    // jumps the user to the bottom of the page on every click.
-    setTimeout(() => {
-        const el = document.querySelector(`[data-field="${id}"] .field-value-input`);
-        if (el) el.focus({ preventScroll: true });
-    }, 0);
+
+    // Position the invisible floating input exactly where the user clicked
+    // and focus IT — not the sidebar input. Because the focused element is
+    // already in the viewport (under the click), the browser's
+    // scroll-into-view-on-typing behavior never fires. Typing flows into
+    // the active field's value with zero page movement.
+    floatingInput.style.left = (cssX - 4) + 'px';
+    floatingInput.style.top  = (cssY - 18) + 'px';
+    floatingInput.value = '';
+    floatingInput.focus({ preventScroll: true });
+});
+
+// Route the floating input's typing into the currently active field. The
+// sidebar value input is kept in sync as a side effect so the user can
+// also see + later edit from there. Pasting and IME composition work
+// naturally because we're piggybacking on a real <input> element.
+floatingInput.addEventListener('input', e => {
+    const f = state.fields.find(x => x.id === state.activeFieldId);
+    if (!f) return;
+    f.value = e.target.value;
+    drawOverlay();
+    const sidebarInput = document.querySelector(`[data-field="${f.id}"] .field-value-input`);
+    if (sidebarInput) sidebarInput.value = e.target.value;
+});
+
+// When the user clicks away from the floating input (anywhere off the PDF
+// stage), drop the active highlight in the sidebar. The field is still
+// editable via its sidebar row.
+floatingInput.addEventListener('blur', () => {
+    if (state.activeFieldId) {
+        state.activeFieldId = null;
+        // Light visual update only — no full re-render of the list which
+        // would lose the user's current sidebar input focus, if any.
+        document.querySelectorAll('.field-row').forEach(r =>
+            r.classList.remove('active'));
+    }
 });
 
 // ══════════════════════════════════════════════════════════
