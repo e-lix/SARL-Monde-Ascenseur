@@ -486,7 +486,13 @@ overlayCanvas.addEventListener('click', e => {
     // origin at bottom-left.
     const x_pt           = canvasX / state.scale;
     const baseline_y_pt  = state.pageHeightPt - (canvasY / state.scale);
-    const width_pt       = Math.min(220, state.pageWidthPt - x_pt - 20);
+    // Default the field to "from click point to the right edge of the
+    // page, minus a small margin". 220pt earlier was too short — long
+    // names like "Mohammed Amine Belkacemi" got truncated mid-word.
+    // Real dotted lines almost never reach the page edge anyway, so
+    // this is a safe upper bound; the visual cursive will simply stop
+    // when the dotted line ends. Phase 2 will let the user resize.
+    const width_pt       = Math.max(120, state.pageWidthPt - x_pt - 24);
 
     const id = `f-${++fieldCounter}`;
     state.fields.push({
