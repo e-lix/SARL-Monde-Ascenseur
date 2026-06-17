@@ -193,7 +193,7 @@
 
     <main class="tool-main">
         <div class="phase-banner">
-            <strong>Phase 1</strong> — Déposez un PDF, cliquez sur les pointillés pour placer un champ, tapez votre texte. L'aperçu manuscrit s'affiche par-dessus le formulaire. Téléchargement et modèles arrivent dans les phases suivantes.
+            <strong>Phase 2</strong> — Déposez un PDF, cliquez sur les pointillés pour placer un champ, tapez. Téléchargez le PDF rempli quand c'est prêt. Les copies multiples arrivent en Phase 3.
         </div>
 
         <!-- DROP ZONE -->
@@ -213,7 +213,10 @@
                     <span class="page-info" id="page-info">Page 1 / 1</span>
                     <button id="btn-next-page" disabled>Suivant ›</button>
                 </div>
-                <button class="btn-reset" id="btn-reset">Changer de PDF</button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button id="btn-download" style="background:var(--brand-red); color:white; border-color:var(--brand-red);">Télécharger le PDF rempli</button>
+                    <button class="btn-reset" id="btn-reset">Changer de PDF</button>
+                </div>
             </div>
 
             <div class="tool-layout">
@@ -283,6 +286,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════
 // FIREBASE CONFIG — copied from admin.html (same project)
@@ -349,6 +353,7 @@ document.getElementById('logout-btn').addEventListener('click', () => auth.signO
 // reusable as templates later on).
 const state = {
     pdfDoc:        null,
+    pdfBytes:      null,  // raw Uint8Array kept around for pdf-lib export
     currentPage:   1,
     pageCount:     0,
     scale:         1.5,   // 1.5 = comfortable reading on desktop
@@ -408,6 +413,10 @@ async function handleFile(file) {
     }
     try {
         const buf = await file.arrayBuffer();
+        // Cache the raw bytes — pdf.js consumes a view of them during render,
+        // and pdf-lib needs an untouched copy at download time. Without the
+        // copy here, the second consumer would see a detached ArrayBuffer.
+        state.pdfBytes = new Uint8Array(buf.slice(0));
         state.pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
         state.pageCount = state.pdfDoc.numPages;
         state.currentPage = 1;
@@ -427,11 +436,119 @@ async function handleFile(file) {
 
 document.getElementById('btn-reset').addEventListener('click', () => {
     state.pdfDoc = null;
+    state.pdfBytes = null;
     state.fields = [];
     toolArea.style.display = 'none';
     dropZone.style.display = 'block';
     fileInput.value = '';
 });
+
+// ══════════════════════════════════════════════════════════
+// DOWNLOAD — composite the cursive overlay onto a copy of the
+// original PDF using pdf-lib. Per field we rasterize the cursive
+// to a transparent PNG (using the same drawCursiveLine logic so
+// the output matches the on-screen preview exactly), embed the
+// PNG into the corresponding PDF page at the click coordinates,
+// then serve the result as a download. The original PDF bytes
+// are untouched; only the overlay is added.
+// ══════════════════════════════════════════════════════════
+const btnDownload = document.getElementById('btn-download');
+
+btnDownload.addEventListener('click', async () => {
+    if (!state.pdfBytes || !state.fields.length) {
+        alert('Ajoutez au moins un champ avant de télécharger.');
+        return;
+    }
+    if (typeof PDFLib === 'undefined') {
+        alert('La bibliothèque pdf-lib n\'a pas pu être chargée. Rafraîchissez la page.');
+        return;
+    }
+    const originalLabel = btnDownload.textContent;
+    btnDownload.textContent = 'Génération...';
+    btnDownload.disabled = true;
+    try {
+        await composeAndDownload();
+    } catch (e) {
+        console.error('[handwriting] download failed:', e);
+        alert('Échec du téléchargement. Voir la console pour le détail.');
+    } finally {
+        btnDownload.textContent = originalLabel;
+        btnDownload.disabled = false;
+    }
+});
+
+async function composeAndDownload() {
+    const pdfLibDoc = await PDFLib.PDFDocument.load(state.pdfBytes);
+    const pages = pdfLibDoc.getPages();
+
+    // Each field rasterizes to its own transparent PNG, sized so the
+    // text baseline sits at a known offset from the image bottom. We
+    // then position the image bottom in PDF coordinates so the
+    // baseline lands EXACTLY on the user's clicked y. Same math as
+    // the on-screen overlay — that's why the export matches what
+    // you see live.
+    //
+    // RASTER_SCALE bumps the PNG resolution above the PDF point
+    // grid so the cursive stays crisp when zoomed in or printed.
+    // 2x is sharp enough for most print sizes without bloating
+    // file size.
+    const RASTER_SCALE = 2;
+
+    for (const field of state.fields) {
+        if (!field.value || !field.value.trim()) continue;
+        const page = pages[field.page_index];
+        if (!page) continue;
+
+        // Canvas height is sized to baseSizePt with generous head/foot
+        // room so ascenders, descenders, baseline drift and vertical
+        // jitter all fit without clipping. The baseline sits ASCENDER_PT
+        // from the top.
+        const baseSize       = state.style.baseSizePt;
+        const ASCENDER_PT    = Math.max(20, baseSize * 1.8);
+        const DESCENDER_PT   = Math.max(12, baseSize * 0.9);
+        const CANVAS_H_PT    = ASCENDER_PT + DESCENDER_PT;
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.ceil(field.width_pt * RASTER_SCALE);
+        canvas.height = Math.ceil(CANVAS_H_PT     * RASTER_SCALE);
+        const ctx = canvas.getContext('2d');
+
+        drawCursiveLine(
+            ctx,
+            field.value,
+            0,                                        // start at left edge of strip
+            ASCENDER_PT * RASTER_SCALE,               // baseline within strip
+            field.width_pt * RASTER_SCALE,            // max width
+            state.style,
+            RASTER_SCALE,
+            field.id,
+        );
+
+        const pngBlobUrl  = canvas.toDataURL('image/png');
+        const pngImage    = await pdfLibDoc.embedPng(pngBlobUrl);
+        // PDF coordinates: origin bottom-left, y grows up. The image
+        // baseline sits ASCENDER_PT above its own bottom, so for the
+        // baseline to align with field.baseline_y_pt the image bottom
+        // must sit DESCENDER_PT below it.
+        page.drawImage(pngImage, {
+            x:      field.x_pt,
+            y:      field.baseline_y_pt - DESCENDER_PT,
+            width:  field.width_pt,
+            height: CANVAS_H_PT,
+        });
+    }
+
+    const outBytes = await pdfLibDoc.save();
+    const blob = new Blob([outBytes], { type: 'application/pdf' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'formulaire-rempli.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 document.getElementById('btn-prev-page').addEventListener('click', () => {
     if (state.currentPage > 1) { state.currentPage--; renderPage(state.currentPage); }
