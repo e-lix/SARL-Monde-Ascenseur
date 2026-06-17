@@ -271,7 +271,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════
 // FIREBASE CONFIG — copied from admin.html (same project)
@@ -289,8 +289,15 @@ const auth = firebase.auth();
 const db   = firebase.firestore(); // reserved for Phase 3 (templates)
 
 // pdf.js worker — required for the library to render pages off the main thread.
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+// Guarded so a CDN failure here never blocks the login form attachment below.
+// (Earlier bug: an unguarded reference broke every script that ran after it,
+// including auth wiring, so the login form silently did nothing on submit.)
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+} else {
+    console.error('[handwriting] pdf.js failed to load. PDF rendering will not work, but login still does.');
+}
 
 // ══════════════════════════════════════════════════════════
 // AUTH GATE — identical pattern to admin.html
