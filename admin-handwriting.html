@@ -809,6 +809,28 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
     for (const tok of words) {
         const isSpace = /^\s+$/.test(tok);
         const L = tok.length;
+
+        // ── INK BLOB at word start ───────────────────────────────────────
+        // Where the pen rests between words it tends to pool a small dot
+        // of ink. Probability scales with messiness; size is small enough
+        // to feel like a pen artefact, not a coffee stain.
+        if (!isSpace && L > 0) {
+            const blobRand = makeRand((counter * 19937) >>> 0);
+            if (blobRand() < 0.18 * mess) {
+                const blobSize = (0.8 + blobRand() * 1.4) * scale * (0.5 + 0.5 * mess);
+                const bx = x + (blobRand() - 0.5) * 2 * scale;
+                const by = baselineY - 2 * scale + (blobRand() - 0.5) * 2 * scale;
+                ctx.save();
+                ctx.fillStyle = 'rgba(20,30,80,0.45)';
+                ctx.shadowColor = 'rgba(20,30,80,0.3)';
+                ctx.shadowBlur = scale * 0.8;
+                ctx.beginPath();
+                ctx.arc(bx, by, blobSize, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
         for (let k = 0; k < L; k++) {
             const ch = tok[k];
             const r = makeRand((counter++ * 40503) ^ ch.charCodeAt(0));
@@ -833,20 +855,75 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
             const R = Math.min(120, base + light);
             const G = Math.min(150, base + 24 + light);
             const B = Math.min(200, base + 78 + light);
-            ctx.fillStyle = `rgb(${R},${G},${B})`;
+
+            // ── DRY PEN SKIP ─────────────────────────────────────────────
+            // Occasionally the ballpoint loses contact and a character
+            // comes out faint. Rare event; scales with messiness.
+            const isSkip = !isSpace && r() < 0.07 * mess;
 
             ctx.save();
             ctx.translate(x + w / 2, baselineY + dy + drift);
             ctx.transform(1, 0, shear, 1, 0, 0);
             ctx.rotate(rot);
-            ctx.shadowColor = `rgba(${R},${G},${B},0.25)`;
-            ctx.shadowBlur  = 0.6 * mess + 0.3;
-            ctx.fillText(ch, -w / 2, 0);
+
+            if (isSkip) {
+                // Light ghost glyph — barely there.
+                ctx.fillStyle = `rgba(${R + 40},${G + 30},${B + 20},0.35)`;
+                ctx.fillText(ch, -w / 2, 0);
+            } else {
+                // Main ink pass with the bleeding shadow.
+                ctx.fillStyle = `rgb(${R},${G},${B})`;
+                ctx.shadowColor = `rgba(${R},${G},${B},0.3)`;
+                ctx.shadowBlur  = 0.7 * mess + 0.4;
+                ctx.fillText(ch, -w / 2, 0);
+
+                // ── SATURATION PASS ──────────────────────────────────────
+                // Re-draw the glyph at a tiny offset with low alpha to
+                // fake the pressure-thickening of a real pen stroke. Only
+                // some characters get it so the overall line doesn't
+                // look uniformly bold.
+                if (r() < 0.55 * mess) {
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 0.4;
+                    const ox = (r() - 0.5) * 0.6 * scale;
+                    const oy = (r() - 0.5) * 0.6 * scale;
+                    ctx.fillText(ch, -w / 2 + ox, oy);
+                    ctx.globalAlpha = 1;
+                }
+            }
             ctx.restore();
 
             const compress = 1 - 0.16 * rush;
             x += w * compress * (1 + (r() - 0.5) * 0.10 * mess);
             if (isSpace) x += 3 * mess;
+        }
+
+        // ── PEN-LIFT STREAK at word end ──────────────────────────────────
+        // When the pen leaves the page it often drags a tiny tail. We
+        // render it as a faint quadratic curve from the last character's
+        // position out and slightly up or down — only sometimes, so it
+        // looks accidental rather than decorative.
+        if (!isSpace && L > 2) {
+            const streakRand = makeRand((counter * 31337) >>> 0);
+            if (streakRand() < 0.15 * mess) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(40,50,100,0.32)';
+                ctx.lineWidth = 0.8 * scale;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                const sx1 = x - 1 * scale;
+                const sy1 = baselineY + (streakRand() - 0.5) * 2 * scale;
+                const sx2 = x + (3 + streakRand() * 4) * scale * mess;
+                const sy2 = sy1 + (streakRand() - 0.5) * 3 * scale;
+                ctx.moveTo(sx1, sy1);
+                ctx.quadraticCurveTo(
+                    (sx1 + sx2) / 2 + (streakRand() - 0.5) * 2,
+                    (sy1 + sy2) / 2 + (streakRand() - 0.5) * 2,
+                    sx2, sy2,
+                );
+                ctx.stroke();
+                ctx.restore();
+            }
         }
     }
 }
