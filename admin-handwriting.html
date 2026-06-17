@@ -721,18 +721,23 @@ overlayCanvas.addEventListener('click', e => {
         width_pt,
     });
     state.activeFieldId = id;
-    renderFieldsList();
-    drawOverlay();
+    // Wrap sidebar + overlay redraws in try/catch so a downstream render
+    // error never blocks the focus + typing path. The user pressing keys
+    // is the most important outcome of this click — everything else can
+    // recover on the next interaction.
+    try { renderFieldsList(); } catch (err) { console.error('[renderFieldsList]', err); }
+    try { drawOverlay(); }       catch (err) { console.error('[drawOverlay]', err); }
 
-    // Position the invisible floating input exactly where the user clicked
-    // and focus IT — not the sidebar input. Because the focused element is
-    // already in the viewport (under the click), the browser's
-    // scroll-into-view-on-typing behavior never fires. Typing flows into
-    // the active field's value with zero page movement.
+    // Position the invisible floating input exactly where the user clicked.
+    // The focus call is deferred to the next tick because some browsers
+    // process click-related focus changes (e.g., body taking focus when
+    // a canvas is clicked) AFTER our synchronous click handler returns —
+    // a sync focus here can get clobbered. A setTimeout(0) lets the
+    // browser settle its own focus management first, then we steal it.
     floatingInput.style.left = (cssX - 4) + 'px';
     floatingInput.style.top  = (cssY - 18) + 'px';
     floatingInput.value = '';
-    floatingInput.focus({ preventScroll: true });
+    setTimeout(() => floatingInput.focus({ preventScroll: true }), 0);
 });
 
 // Route the floating input's typing into the currently active field. The
@@ -748,18 +753,13 @@ floatingInput.addEventListener('input', e => {
     if (sidebarInput) sidebarInput.value = e.target.value;
 });
 
-// When the user clicks away from the floating input (anywhere off the PDF
-// stage), drop the active highlight in the sidebar. The field is still
-// editable via its sidebar row.
-floatingInput.addEventListener('blur', () => {
-    if (state.activeFieldId) {
-        state.activeFieldId = null;
-        // Light visual update only — no full re-render of the list which
-        // would lose the user's current sidebar input focus, if any.
-        document.querySelectorAll('.field-row').forEach(r =>
-            r.classList.remove('active'));
-    }
-});
+// NOTE: we used to null `state.activeFieldId` here on blur, to "drop the
+// active highlight". That broke typing entirely on some browsers — focus
+// transiently lands on the canvas or body before our setTimeout reaches
+// floatingInput, the blur fires, activeFieldId becomes null, then when
+// floatingInput's `input` event fires it can't find an active field. The
+// active highlight is cosmetic; keystrokes are not. We keep the active
+// field until the user explicitly picks another one via the sidebar.
 
 // ══════════════════════════════════════════════════════════
 // FIELDS LIST — sidebar editor. Label + value per field. Deleting
