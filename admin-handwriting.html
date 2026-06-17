@@ -489,9 +489,12 @@ overlayCanvas.addEventListener('click', e => {
     renderFieldsList();
     drawOverlay();
     // Focus the new field's value input so user can type immediately.
+    // preventScroll: true keeps the page anchored at the PDF — without it
+    // the browser auto-scrolls to bring the sidebar input into view, which
+    // jumps the user to the bottom of the page on every click.
     setTimeout(() => {
         const el = document.querySelector(`[data-field="${id}"] .field-value-input`);
-        if (el) el.focus();
+        if (el) el.focus({ preventScroll: true });
     }, 0);
 });
 
