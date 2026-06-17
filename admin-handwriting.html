@@ -644,8 +644,10 @@ async function composeAndDownload() {
     triggerDownload(outBytes, `formulaire-${state.numCopies}copies.pdf`);
 }
 
-// Initial label + state sync — runs after btnDownload is defined above.
-syncStyleFromControls();
+// (Initial label + state sync moved to the very end of the script — it has
+// to run AFTER the `ctrl` const and the `val*` consts are declared. The
+// previous placement here crashed with a TDZ ReferenceError on `ctrl`,
+// which silently killed every event listener registered below this line.)
 
 document.getElementById('btn-prev-page').addEventListener('click', () => {
     if (state.currentPage > 1) { state.currentPage--; renderPage(state.currentPage); }
@@ -884,6 +886,11 @@ Object.values(ctrl).forEach(el => {
     el.addEventListener('input', () => { syncStyleFromControls(); drawOverlay(); });
     el.addEventListener('change', () => { syncStyleFromControls(); drawOverlay(); });
 });
+
+// Initial state sync — must run after `ctrl` + `val*` are declared above
+// and after `btnDownload` is declared earlier. Drives the displayed
+// values on the sliders (e.g. "1°", "1") and the download-button label.
+syncStyleFromControls();
 
 // ══════════════════════════════════════════════════════════
 // CURSIVE RENDERING — adapted from the user's approved demo. Per-
