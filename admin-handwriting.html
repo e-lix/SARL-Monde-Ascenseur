@@ -138,11 +138,34 @@
         .field-row .field-value-input:focus { outline: none; border-color: var(--brand-red); }
         .field-row .field-label-input { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
         .field-row .field-meta { color: var(--gray); font-size: 0.7rem; font-family: monospace; }
+        .field-row .field-value-line { display: flex; gap: 6px; align-items: center; }
+        .field-row .field-value-line .field-value-input { flex: 1; }
+        .field-row .field-color {
+            width: 32px; height: 28px; padding: 0; border: 1px solid var(--light-gray);
+            cursor: pointer; background: white; flex-shrink: 0;
+        }
+        .field-row .field-color::-webkit-color-swatch-wrapper { padding: 2px; }
+        .field-row .field-color::-webkit-color-swatch { border: none; }
+        .field-row .field-color-reset {
+            background: transparent; border: none; cursor: pointer;
+            color: var(--gray); font-size: 0.65rem; padding: 0 4px; text-decoration: underline;
+        }
+        .field-row .field-color-reset:hover { color: var(--brand-red); }
         .field-row .field-delete {
             background: transparent; border: none; cursor: pointer;
             color: var(--gray); font-size: 1.1rem; padding: 4px 8px; line-height: 1;
         }
         .field-row .field-delete:hover { color: var(--brand-red); }
+
+        /* Global ink-color picker styling — make it look intentional */
+        .color-control { display: flex; gap: 10px; align-items: center; }
+        .color-control input[type=color] {
+            width: 44px; height: 36px; padding: 0; border: 1px solid var(--light-gray);
+            cursor: pointer; background: white;
+        }
+        .color-control input[type=color]::-webkit-color-swatch-wrapper { padding: 3px; }
+        .color-control input[type=color]::-webkit-color-swatch { border: none; }
+        .color-control .color-hex { font-family: monospace; font-size: 0.8rem; color: var(--gray); }
         .fields-empty { color: var(--gray); font-size: 0.85rem; text-align: center; padding: 14px 0; }
 
         /* sliders */
@@ -249,6 +272,25 @@
                                 <option value="Dancing Script">Dancing Script (fluide)</option>
                                 <option value="Caveat">Caveat (proche de l'imprimé)</option>
                             </select>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Type de stylo</label>
+                            <select id="ctrl-pentype">
+                                <option value="bille">Stylo bille (par défaut)</option>
+                                <option value="plume">Stylo plume (épais, mouillé)</option>
+                                <option value="sec">Stylo sec (saute, faible)</option>
+                                <option value="crayon">Crayon de papier (gris)</option>
+                            </select>
+                            <div class="hint">Affecte l'épaisseur, le saignement, les pâtés et les sauts d'encre.</div>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Couleur du stylo (global) <span class="val color-hex" id="val-inkcolor">#1a2a5e</span></label>
+                            <div class="color-control">
+                                <input type="color" id="ctrl-inkcolor" value="#1a2a5e">
+                                <span style="font-size:0.78rem; color:var(--gray);">S'applique à tous les champs qui n'ont pas leur propre couleur.</span>
+                            </div>
                         </div>
 
                         <div class="slider-row">
@@ -372,6 +414,8 @@ const state = {
         messiness: 0.7,
         rush: 0.6,
         baseSizePt: 14,
+        inkColor: '#1a2a5e', // dark navy ballpoint — global default for every field
+        penType: 'bille',    // 'bille' | 'plume' | 'sec' | 'crayon'
     },
     numCopies: 1,         // 1..7 — same-person-different-days variations
     activeFieldId: null,
@@ -497,6 +541,10 @@ function getPerCopyStyle(copyIdx) {
         baseSizePt: Math.max(8,                  state.style.baseSizePt * (1 + (r() - 0.5) * 0.08)), // ±4%
         messiness:  Math.max(0,   Math.min(1.6, state.style.messiness  + (r() - 0.5) * 0.2)),  // ±0.1
         rush:       Math.max(0,   Math.min(1,    state.style.rush      + (r() - 0.5) * 0.16)), // ±0.08
+        // Person profile carries the pen + color forward unchanged — a
+        // real person doesn't switch pens between copies of the same form.
+        penType:    state.style.penType,
+        inkColor:   state.style.inkColor,
     };
 }
 
@@ -525,13 +573,19 @@ async function buildCopy(copyIdx) {
         canvas.height = Math.ceil(CANVAS_H_PT     * RASTER_SCALE);
         const ctx = canvas.getContext('2d');
 
+        // Per-field color override: a field that has its own .color
+        // wins over the copy-level (global) ink color. This way one
+        // field can be red while everything else stays navy.
+        const fieldStyle = field.color
+            ? { ...copyStyle, inkColor: field.color }
+            : copyStyle;
         drawCursiveLine(
             ctx,
             field.value,
             0,
             ASCENDER_PT * RASTER_SCALE,
             field.width_pt * RASTER_SCALE,
-            copyStyle,
+            fieldStyle,
             RASTER_SCALE,
             `${field.id}-c${copyIdx}`,
         );
@@ -722,11 +776,19 @@ function renderFieldsList() {
         const row = document.createElement('div');
         row.className = 'field-row' + (f.id === state.activeFieldId ? ' active' : '');
         row.dataset.field = f.id;
+        const effectiveColor = f.color || state.style.inkColor;
+        const hasOverride = !!f.color;
         row.innerHTML = `
             <div class="field-inputs">
                 <input class="field-label-input" type="text" value="${escapeHtml(f.label)}" placeholder="étiquette (ex: nom)">
-                <input class="field-value-input" type="text" value="${escapeHtml(f.value)}" placeholder="valeur à écrire">
-                <span class="field-meta">x ${f.x_pt.toFixed(0)}pt · y ${f.baseline_y_pt.toFixed(0)}pt · larg ${f.width_pt.toFixed(0)}pt</span>
+                <div class="field-value-line">
+                    <input class="field-value-input" type="text" value="${escapeHtml(f.value)}" placeholder="valeur à écrire">
+                    <input class="field-color" type="color" value="${effectiveColor}" title="Couleur pour ce champ">
+                </div>
+                <span class="field-meta">
+                    x ${f.x_pt.toFixed(0)}pt · y ${f.baseline_y_pt.toFixed(0)}pt · larg ${f.width_pt.toFixed(0)}pt
+                    ${hasOverride ? `<button class="field-color-reset" title="Revenir à la couleur globale">↺ couleur globale</button>` : ''}
+                </span>
             </div>
             <button class="field-delete" title="Supprimer">×</button>
         `;
@@ -745,6 +807,21 @@ function renderFieldsList() {
             document.querySelectorAll('.field-row').forEach(r =>
                 r.classList.toggle('active', r.dataset.field === f.id));
         });
+        row.querySelector('.field-color').addEventListener('input', e => {
+            f.color = e.target.value;
+            drawOverlay();
+            // Re-render the row only so the "↺ couleur globale" reset link
+            // appears now that this field has an override.
+            renderFieldsList();
+        });
+        const resetBtn = row.querySelector('.field-color-reset');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                delete f.color;
+                renderFieldsList();
+                drawOverlay();
+            });
+        }
         row.querySelector('.field-delete').addEventListener('click', () => {
             state.fields = state.fields.filter(x => x.id !== f.id);
             if (state.activeFieldId === f.id) state.activeFieldId = null;
@@ -765,18 +842,21 @@ function escapeHtml(s) {
 // STYLE CONTROLS
 // ══════════════════════════════════════════════════════════
 const ctrl = {
-    font:   document.getElementById('ctrl-font'),
-    slant:  document.getElementById('ctrl-slant'),
-    mess:   document.getElementById('ctrl-mess'),
-    rush:   document.getElementById('ctrl-rush'),
-    size:   document.getElementById('ctrl-size'),
-    copies: document.getElementById('ctrl-copies'),
+    font:     document.getElementById('ctrl-font'),
+    slant:    document.getElementById('ctrl-slant'),
+    mess:     document.getElementById('ctrl-mess'),
+    rush:     document.getElementById('ctrl-rush'),
+    size:     document.getElementById('ctrl-size'),
+    copies:   document.getElementById('ctrl-copies'),
+    pentype:  document.getElementById('ctrl-pentype'),
+    inkcolor: document.getElementById('ctrl-inkcolor'),
 };
-const valSlant  = document.getElementById('val-slant');
-const valMess   = document.getElementById('val-mess');
-const valRush   = document.getElementById('val-rush');
-const valSize   = document.getElementById('val-size');
-const valCopies = document.getElementById('val-copies');
+const valSlant    = document.getElementById('val-slant');
+const valMess     = document.getElementById('val-mess');
+const valRush     = document.getElementById('val-rush');
+const valSize     = document.getElementById('val-size');
+const valCopies   = document.getElementById('val-copies');
+const valInkColor = document.getElementById('val-inkcolor');
 
 function syncStyleFromControls() {
     state.style.font       = ctrl.font.value;
@@ -784,12 +864,15 @@ function syncStyleFromControls() {
     state.style.messiness  = parseFloat(ctrl.mess.value);
     state.style.rush       = parseFloat(ctrl.rush.value);
     state.style.baseSizePt = parseFloat(ctrl.size.value);
+    state.style.penType    = ctrl.pentype.value;
+    state.style.inkColor   = ctrl.inkcolor.value;
     state.numCopies        = parseInt(ctrl.copies.value, 10);
-    valSlant.textContent  = `${state.style.slant}°`;
-    valMess.textContent   = state.style.messiness.toFixed(2);
-    valRush.textContent   = state.style.rush.toFixed(2);
-    valSize.textContent   = state.style.baseSizePt;
-    valCopies.textContent = state.numCopies;
+    valSlant.textContent    = `${state.style.slant}°`;
+    valMess.textContent     = state.style.messiness.toFixed(2);
+    valRush.textContent     = state.style.rush.toFixed(2);
+    valSize.textContent     = state.style.baseSizePt;
+    valCopies.textContent   = state.numCopies;
+    valInkColor.textContent = state.style.inkColor.toUpperCase();
     updateDownloadButtonLabel();
 }
 function updateDownloadButtonLabel() {
@@ -828,8 +911,38 @@ function drawOverlay() {
         const canvasX = f.x_pt * state.scale;
         const canvasY = (state.pageHeightPt - f.baseline_y_pt) * state.scale;
         const canvasW = f.width_pt * state.scale;
-        drawCursiveLine(overlayCtx, f.value, canvasX, canvasY, canvasW, state.style, state.scale, f.id);
+        const fieldStyle = f.color ? { ...state.style, inkColor: f.color } : state.style;
+        drawCursiveLine(overlayCtx, f.value, canvasX, canvasY, canvasW, fieldStyle, state.scale, f.id);
     }
+}
+
+// Pen-type profile: multipliers that modify how the ink renders. The
+// base cursive logic (jitter, drift, trail-off, blobs, skips, streaks)
+// is identical across pens — only the intensity dials change. This is
+// how we get a fountain pen to look thick + wet without rewriting the
+// renderer, and a dry pen to look scratchy without losing the
+// handwriting "fingerprint" of the person.
+function getPenProfile(penType) {
+    switch (penType) {
+        case 'plume':
+            return { blurMul: 1.9, satFreqMul: 1.5, satAlphaMul: 1.4, skipMul: 0.4, blobMul: 1.4, streakMul: 1.3, charLightenMul: 0.85, forceGray: false };
+        case 'sec':
+            return { blurMul: 0.5, satFreqMul: 0.4, satAlphaMul: 0.5, skipMul: 3.2, blobMul: 0.3, streakMul: 0.5, charLightenMul: 1.4, forceGray: false };
+        case 'crayon':
+            return { blurMul: 0.25, satFreqMul: 0.3, satAlphaMul: 0.4, skipMul: 0.6, blobMul: 0,   streakMul: 0.3, charLightenMul: 1.2, forceGray: true  };
+        case 'bille':
+        default:
+            return { blurMul: 1.0, satFreqMul: 1.0, satAlphaMul: 1.0, skipMul: 1.0, blobMul: 1.0, streakMul: 1.0, charLightenMul: 1.0, forceGray: false };
+    }
+}
+
+// Parse a "#rrggbb" hex string into {r,g,b} integers. Used as the base
+// ink color the rendering pipeline ramps from (darker at word starts,
+// lighter at trail-offs, with small per-character density jitter).
+function hexToRgb(hex) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+    if (!m) return { r: 26, g: 42, b: 94 }; // default navy fallback
+    return { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) };
 }
 
 // Render one line of cursive text. `baselineY` is canvas pixels — the
@@ -842,6 +955,15 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
     const baseSize = style.baseSizePt * scale;   // PDF points → canvas pixels
     const mess     = style.messiness;
     const rush     = style.rush;
+    const pen      = getPenProfile(style.penType || 'bille');
+    // Resolve the ink RGB once. Pencil mode collapses to gray so users
+    // who pick a colored "crayon" still get the expected look — color
+    // picker remains useful when they switch back to a pen.
+    let ink = hexToRgb(style.inkColor || '#1a2a5e');
+    if (pen.forceGray) {
+        const avg = Math.round((ink.r + ink.g + ink.b) / 3);
+        ink = { r: avg, g: avg, b: avg };
+    }
     // Deterministic per-field seed so each field has its own "personality"
     // independent of others. Hashing the string id keeps it stable when
     // user re-renders without retyping.
@@ -864,18 +986,18 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
 
         // ── INK BLOB at word start ───────────────────────────────────────
         // Where the pen rests between words it tends to pool a small dot
-        // of ink. Probability scales with messiness; size is small enough
-        // to feel like a pen artefact, not a coffee stain.
-        if (!isSpace && L > 0) {
+        // of ink. Probability scales with messiness AND the pen profile —
+        // a fountain pen blobs more than a ballpoint, a pencil never.
+        if (!isSpace && L > 0 && pen.blobMul > 0) {
             const blobRand = makeRand((counter * 19937) >>> 0);
-            if (blobRand() < 0.18 * mess) {
+            if (blobRand() < 0.18 * mess * pen.blobMul) {
                 const blobSize = (0.8 + blobRand() * 1.4) * scale * (0.5 + 0.5 * mess);
                 const bx = x + (blobRand() - 0.5) * 2 * scale;
                 const by = baselineY - 2 * scale + (blobRand() - 0.5) * 2 * scale;
                 ctx.save();
-                ctx.fillStyle = 'rgba(20,30,80,0.45)';
-                ctx.shadowColor = 'rgba(20,30,80,0.3)';
-                ctx.shadowBlur = scale * 0.8;
+                ctx.fillStyle   = `rgba(${ink.r},${ink.g},${ink.b},0.5)`;
+                ctx.shadowColor = `rgba(${ink.r},${ink.g},${ink.b},0.35)`;
+                ctx.shadowBlur  = scale * 0.8 * pen.blurMul;
                 ctx.beginPath();
                 ctx.arc(bx, by, blobSize, 0, Math.PI * 2);
                 ctx.fill();
@@ -900,18 +1022,21 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
             const dy    = (r() - 0.5) * 8 * mess;
             const drift = Math.sin(x * driftFreq + driftPhase) * driftAmp;
 
-            // Ink color: muted blue/grey like a tired ballpoint. Darker at
-            // word start, lighter as the word trails off.
-            const base  = 24 + Math.floor(r() * 16);
-            const light = Math.floor(70 * trail);
-            const R = Math.min(120, base + light);
-            const G = Math.min(150, base + 24 + light);
-            const B = Math.min(200, base + 78 + light);
+            // Ink color: ramps the user-chosen base toward white at
+            // word-end (trail-off) and adds small per-character density
+            // jitter. The pen profile's charLightenMul amplifies the
+            // trail-off for dry pens / pencil, dampens it for fountain.
+            const jitter = Math.floor(r() * 18 - 9);             // ±9 per channel
+            const lift   = (trail * 70 + 18) * pen.charLightenMul;
+            const R = Math.min(255, Math.max(0, ink.r + lift + jitter));
+            const G = Math.min(255, Math.max(0, ink.g + lift + jitter));
+            const B = Math.min(255, Math.max(0, ink.b + lift + jitter));
 
             // ── DRY PEN SKIP ─────────────────────────────────────────────
             // Occasionally the ballpoint loses contact and a character
-            // comes out faint. Rare event; scales with messiness.
-            const isSkip = !isSpace && r() < 0.07 * mess;
+            // comes out faint. The pen profile scales this — a dry pen
+            // skips often, a fountain pen rarely.
+            const isSkip = !isSpace && r() < 0.07 * mess * pen.skipMul;
 
             ctx.save();
             ctx.translate(x + w / 2, baselineY + dy + drift);
@@ -920,23 +1045,24 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
 
             if (isSkip) {
                 // Light ghost glyph — barely there.
-                ctx.fillStyle = `rgba(${R + 40},${G + 30},${B + 20},0.35)`;
+                ctx.fillStyle = `rgba(${Math.round(R + 40)},${Math.round(G + 30)},${Math.round(B + 20)},0.35)`;
                 ctx.fillText(ch, -w / 2, 0);
             } else {
                 // Main ink pass with the bleeding shadow.
-                ctx.fillStyle = `rgb(${R},${G},${B})`;
-                ctx.shadowColor = `rgba(${R},${G},${B},0.3)`;
-                ctx.shadowBlur  = 0.7 * mess + 0.4;
+                ctx.fillStyle   = `rgb(${Math.round(R)},${Math.round(G)},${Math.round(B)})`;
+                ctx.shadowColor = `rgba(${Math.round(R)},${Math.round(G)},${Math.round(B)},0.3)`;
+                ctx.shadowBlur  = (0.7 * mess + 0.4) * pen.blurMul;
                 ctx.fillText(ch, -w / 2, 0);
 
                 // ── SATURATION PASS ──────────────────────────────────────
                 // Re-draw the glyph at a tiny offset with low alpha to
-                // fake the pressure-thickening of a real pen stroke. Only
-                // some characters get it so the overall line doesn't
-                // look uniformly bold.
-                if (r() < 0.55 * mess) {
+                // fake the pressure-thickening of a real pen stroke. The
+                // pen profile controls both how often AND how strong this
+                // overlay is — fountain pens get a heavy, frequent pass;
+                // dry pens / pencil barely get one.
+                if (r() < 0.55 * mess * pen.satFreqMul) {
                     ctx.shadowBlur = 0;
-                    ctx.globalAlpha = 0.4;
+                    ctx.globalAlpha = 0.4 * pen.satAlphaMul;
                     const ox = (r() - 0.5) * 0.6 * scale;
                     const oy = (r() - 0.5) * 0.6 * scale;
                     ctx.fillText(ch, -w / 2 + ox, oy);
@@ -954,12 +1080,13 @@ function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, s
         // When the pen leaves the page it often drags a tiny tail. We
         // render it as a faint quadratic curve from the last character's
         // position out and slightly up or down — only sometimes, so it
-        // looks accidental rather than decorative.
-        if (!isSpace && L > 2) {
+        // looks accidental rather than decorative. Scales with pen
+        // profile so fountain pens streak more, pencils barely.
+        if (!isSpace && L > 2 && pen.streakMul > 0) {
             const streakRand = makeRand((counter * 31337) >>> 0);
-            if (streakRand() < 0.15 * mess) {
+            if (streakRand() < 0.15 * mess * pen.streakMul) {
                 ctx.save();
-                ctx.strokeStyle = 'rgba(40,50,100,0.32)';
+                ctx.strokeStyle = `rgba(${ink.r},${ink.g},${ink.b},0.35)`;
                 ctx.lineWidth = 0.8 * scale;
                 ctx.lineCap = 'round';
                 ctx.beginPath();
