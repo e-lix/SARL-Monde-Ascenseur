@@ -193,7 +193,7 @@
 
     <main class="tool-main">
         <div class="phase-banner">
-            <strong>Phase 2</strong> — Déposez un PDF, cliquez sur les pointillés pour placer un champ, tapez. Téléchargez le PDF rempli quand c'est prêt. Les copies multiples arrivent en Phase 3.
+            <strong>Phase 3</strong> — Déposez un PDF, cliquez sur les pointillés, tapez, choisissez le nombre de copies (1 à 7), téléchargez. Chaque copie a une écriture légèrement différente — comme la même personne sur des jours différents.
         </div>
 
         <!-- DROP ZONE -->
@@ -273,6 +273,12 @@
                             <label>Taille de base (pt) <span class="val" id="val-size">14</span></label>
                             <input type="range" id="ctrl-size" min="8" max="28" step="1" value="14">
                             <div class="hint">Hauteur de la police en points PDF</div>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Nombre de copies <span class="val" id="val-copies">1</span></label>
+                            <input type="range" id="ctrl-copies" min="1" max="7" step="1" value="1">
+                            <div class="hint">Chaque copie a sa propre écriture, légèrement différente. L'aperçu à l'écran montre toujours la copie n°1.</div>
                         </div>
                     </div>
                 </aside>
@@ -367,6 +373,7 @@ const state = {
         rush: 0.6,
         baseSizePt: 14,
     },
+    numCopies: 1,         // 1..7 — same-person-different-days variations
     activeFieldId: null,
 };
 let fieldCounter = 0;
@@ -477,21 +484,30 @@ btnDownload.addEventListener('click', async () => {
     }
 });
 
-async function composeAndDownload() {
+// Per-copy "same person on a different day" style nudges. Copy 0 is the
+// untouched preview style. Copy 1..6 each get small, seeded deviations
+// off the sliders so the writing varies without becoming a different
+// person. Font is part of the "person profile" and never changes.
+function getPerCopyStyle(copyIdx) {
+    if (copyIdx === 0) return state.style;
+    const r = makeRand((copyIdx + 1) * 7919);
+    return {
+        font:       state.style.font,
+        slant:      Math.max(0,   Math.min(28,  state.style.slant      + (r() - 0.5) * 3)),    // ±1.5°
+        baseSizePt: Math.max(8,                  state.style.baseSizePt * (1 + (r() - 0.5) * 0.08)), // ±4%
+        messiness:  Math.max(0,   Math.min(1.6, state.style.messiness  + (r() - 0.5) * 0.2)),  // ±0.1
+        rush:       Math.max(0,   Math.min(1,    state.style.rush      + (r() - 0.5) * 0.16)), // ±0.08
+    };
+}
+
+// Build one fully-filled PDF for the given copy index. Returns a
+// PDFLib.PDFDocument that the caller can save() or copy pages out of.
+// Per-field rasterization uses the copy's style + a copy-specific seed
+// prefix so jitter differs between copies even when slider values match.
+async function buildCopy(copyIdx) {
+    const copyStyle = getPerCopyStyle(copyIdx);
     const pdfLibDoc = await PDFLib.PDFDocument.load(state.pdfBytes);
     const pages = pdfLibDoc.getPages();
-
-    // Each field rasterizes to its own transparent PNG, sized so the
-    // text baseline sits at a known offset from the image bottom. We
-    // then position the image bottom in PDF coordinates so the
-    // baseline lands EXACTLY on the user's clicked y. Same math as
-    // the on-screen overlay — that's why the export matches what
-    // you see live.
-    //
-    // RASTER_SCALE bumps the PNG resolution above the PDF point
-    // grid so the cursive stays crisp when zoomed in or printed.
-    // 2x is sharp enough for most print sizes without bloating
-    // file size.
     const RASTER_SCALE = 2;
 
     for (const field of state.fields) {
@@ -499,14 +515,10 @@ async function composeAndDownload() {
         const page = pages[field.page_index];
         if (!page) continue;
 
-        // Canvas height is sized to baseSizePt with generous head/foot
-        // room so ascenders, descenders, baseline drift and vertical
-        // jitter all fit without clipping. The baseline sits ASCENDER_PT
-        // from the top.
-        const baseSize       = state.style.baseSizePt;
-        const ASCENDER_PT    = Math.max(20, baseSize * 1.8);
-        const DESCENDER_PT   = Math.max(12, baseSize * 0.9);
-        const CANVAS_H_PT    = ASCENDER_PT + DESCENDER_PT;
+        const baseSize     = copyStyle.baseSizePt;
+        const ASCENDER_PT  = Math.max(20, baseSize * 1.8);
+        const DESCENDER_PT = Math.max(12, baseSize * 0.9);
+        const CANVAS_H_PT  = ASCENDER_PT + DESCENDER_PT;
 
         const canvas = document.createElement('canvas');
         canvas.width  = Math.ceil(field.width_pt * RASTER_SCALE);
@@ -516,20 +528,16 @@ async function composeAndDownload() {
         drawCursiveLine(
             ctx,
             field.value,
-            0,                                        // start at left edge of strip
-            ASCENDER_PT * RASTER_SCALE,               // baseline within strip
-            field.width_pt * RASTER_SCALE,            // max width
-            state.style,
+            0,
+            ASCENDER_PT * RASTER_SCALE,
+            field.width_pt * RASTER_SCALE,
+            copyStyle,
             RASTER_SCALE,
-            field.id,
+            `${field.id}-c${copyIdx}`,
         );
 
-        const pngBlobUrl  = canvas.toDataURL('image/png');
-        const pngImage    = await pdfLibDoc.embedPng(pngBlobUrl);
-        // PDF coordinates: origin bottom-left, y grows up. The image
-        // baseline sits ASCENDER_PT above its own bottom, so for the
-        // baseline to align with field.baseline_y_pt the image bottom
-        // must sit DESCENDER_PT below it.
+        const pngDataURL = canvas.toDataURL('image/png');
+        const pngImage   = await pdfLibDoc.embedPng(pngDataURL);
         page.drawImage(pngImage, {
             x:      field.x_pt,
             y:      field.baseline_y_pt - DESCENDER_PT,
@@ -538,17 +546,52 @@ async function composeAndDownload() {
         });
     }
 
-    const outBytes = await pdfLibDoc.save();
-    const blob = new Blob([outBytes], { type: 'application/pdf' });
+    return pdfLibDoc;
+}
+
+function triggerDownload(bytes, filename) {
+    const blob = new Blob([bytes], { type: 'application/pdf' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
-    a.download = 'formulaire-rempli.pdf';
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+
+async function composeAndDownload() {
+    // Single-copy fast path — saves a redundant load + page-copy round trip
+    // when the user just wants one filled form.
+    if (state.numCopies === 1) {
+        const doc = await buildCopy(0);
+        const outBytes = await doc.save();
+        triggerDownload(outBytes, 'formulaire-rempli.pdf');
+        return;
+    }
+
+    // Multi-copy: build each copy as its own filled PDF, then concatenate
+    // the pages into a single combined output. The user can print the
+    // combined file once to get N hand-filled sets of the same form.
+    const combined = await PDFLib.PDFDocument.create();
+    for (let i = 0; i < state.numCopies; i++) {
+        btnDownload.textContent = `Génération copie ${i + 1}/${state.numCopies}...`;
+        const copyDoc = await buildCopy(i);
+        // Round-trip via save + load gives us a clean document whose
+        // pages copy cleanly into the combined doc. copyPages on the
+        // direct buildCopy result can occasionally inherit dangling refs.
+        const copyBytes = await copyDoc.save();
+        const reloaded  = await PDFLib.PDFDocument.load(copyBytes);
+        const pageRefs  = await combined.copyPages(reloaded, reloaded.getPageIndices());
+        pageRefs.forEach(p => combined.addPage(p));
+    }
+    const outBytes = await combined.save();
+    triggerDownload(outBytes, `formulaire-${state.numCopies}copies.pdf`);
+}
+
+// Initial label + state sync — runs after btnDownload is defined above.
+syncStyleFromControls();
 
 document.getElementById('btn-prev-page').addEventListener('click', () => {
     if (state.currentPage > 1) { state.currentPage--; renderPage(state.currentPage); }
@@ -722,16 +765,18 @@ function escapeHtml(s) {
 // STYLE CONTROLS
 // ══════════════════════════════════════════════════════════
 const ctrl = {
-    font:  document.getElementById('ctrl-font'),
-    slant: document.getElementById('ctrl-slant'),
-    mess:  document.getElementById('ctrl-mess'),
-    rush:  document.getElementById('ctrl-rush'),
-    size:  document.getElementById('ctrl-size'),
+    font:   document.getElementById('ctrl-font'),
+    slant:  document.getElementById('ctrl-slant'),
+    mess:   document.getElementById('ctrl-mess'),
+    rush:   document.getElementById('ctrl-rush'),
+    size:   document.getElementById('ctrl-size'),
+    copies: document.getElementById('ctrl-copies'),
 };
-const valSlant = document.getElementById('val-slant');
-const valMess  = document.getElementById('val-mess');
-const valRush  = document.getElementById('val-rush');
-const valSize  = document.getElementById('val-size');
+const valSlant  = document.getElementById('val-slant');
+const valMess   = document.getElementById('val-mess');
+const valRush   = document.getElementById('val-rush');
+const valSize   = document.getElementById('val-size');
+const valCopies = document.getElementById('val-copies');
 
 function syncStyleFromControls() {
     state.style.font       = ctrl.font.value;
@@ -739,16 +784,23 @@ function syncStyleFromControls() {
     state.style.messiness  = parseFloat(ctrl.mess.value);
     state.style.rush       = parseFloat(ctrl.rush.value);
     state.style.baseSizePt = parseFloat(ctrl.size.value);
-    valSlant.textContent = `${state.style.slant}°`;
-    valMess.textContent  = state.style.messiness.toFixed(2);
-    valRush.textContent  = state.style.rush.toFixed(2);
-    valSize.textContent  = state.style.baseSizePt;
+    state.numCopies        = parseInt(ctrl.copies.value, 10);
+    valSlant.textContent  = `${state.style.slant}°`;
+    valMess.textContent   = state.style.messiness.toFixed(2);
+    valRush.textContent   = state.style.rush.toFixed(2);
+    valSize.textContent   = state.style.baseSizePt;
+    valCopies.textContent = state.numCopies;
+    updateDownloadButtonLabel();
+}
+function updateDownloadButtonLabel() {
+    btnDownload.textContent = state.numCopies === 1
+        ? 'Télécharger le PDF rempli'
+        : `Télécharger ${state.numCopies} copies (1 PDF)`;
 }
 Object.values(ctrl).forEach(el => {
     el.addEventListener('input', () => { syncStyleFromControls(); drawOverlay(); });
     el.addEventListener('change', () => { syncStyleFromControls(); drawOverlay(); });
 });
-syncStyleFromControls();
 
 // ══════════════════════════════════════════════════════════
 // CURSIVE RENDERING — adapted from the user's approved demo. Per-
