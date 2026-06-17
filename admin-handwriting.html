@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remplisseur — Monde Ascenseur</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&family=Cedarville+Cursive&family=Homemade+Apple&family=Dancing+Script:wght@400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-red: #c0392b;
+            --black: #0a0a0a;
+            --gray: #6b6b6b;
+            --light-gray: #e8e7e3;
+            --cream: #f0efe9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); line-height: 1.6; }
+
+        /* ── LOGIN (same as admin.html) ── */
+        #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--black); }
+        .login-box { background: white; padding: 50px; width: 380px; }
+        .login-logo { font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin-bottom: 6px; }
+        .login-logo span { color: var(--brand-red); }
+        .login-sub { color: var(--gray); font-size: 0.85rem; margin-bottom: 30px; }
+        .f-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 6px; }
+        .f-input { width: 100%; padding: 13px 14px; border: 1px solid var(--light-gray); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 14px; transition: border-color 0.2s; }
+        .f-input:focus { outline: none; border-color: var(--brand-red); }
+        .btn-primary { width: 100%; padding: 14px; background: var(--brand-red); color: white; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.88; }
+        #login-error { color: var(--brand-red); font-size: 0.85rem; margin-top: 12px; display: none; }
+
+        /* ── TOOL NAV ── */
+        #tool-panel { display: none; }
+        .admin-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 14px 5%; background: white; border-bottom: 1px solid var(--light-gray); z-index: 100; }
+        .admin-nav-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+        .admin-nav-title span { color: var(--brand-red); }
+        .nav-links { display: flex; align-items: center; gap: 18px; }
+        .nav-link { color: var(--gray); text-decoration: none; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px; transition: color 0.2s; }
+        .nav-link:hover, .nav-link.active { color: var(--brand-red); }
+        .btn-logout { padding: 8px 18px; background: transparent; border: 1px solid var(--light-gray); color: var(--gray); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px; transition: 0.2s; }
+        .btn-logout:hover { border-color: var(--brand-red); color: var(--brand-red); }
+
+        .tool-main { max-width: 1280px; margin: 0 auto; padding: 100px 5% 80px; }
+
+        /* ── DROP ZONE ── */
+        #drop-zone {
+            border: 2px dashed var(--light-gray);
+            border-radius: 4px;
+            background: white;
+            padding: 80px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        #drop-zone.dragging { border-color: var(--brand-red); background: #fff5f4; }
+        #drop-zone h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 8px; }
+        #drop-zone p { color: var(--gray); font-size: 0.9rem; }
+        #drop-zone .hint { color: var(--gray); font-size: 0.8rem; margin-top: 14px; }
+        #drop-zone input { display: none; }
+        #drop-error { color: var(--brand-red); font-size: 0.85rem; margin-top: 14px; display: none; }
+
+        /* ── TOOL AREA (after PDF dropped) ── */
+        #tool-area { display: none; }
+        .tool-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+        @media (max-width: 980px) { .tool-layout { grid-template-columns: 1fr; } }
+
+        .pdf-wrap {
+            background: white;
+            border: 1px solid var(--light-gray);
+            padding: 18px;
+            overflow: auto;
+            max-height: calc(100vh - 160px);
+        }
+        .pdf-stage {
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .pdf-stage canvas { display: block; }
+        #pdf-canvas { background: white; }
+        #overlay-canvas { position: absolute; top: 0; left: 0; cursor: crosshair; }
+
+        .pdf-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
+        }
+        .pdf-toolbar .left { display: flex; gap: 8px; align-items: center; }
+        .pdf-toolbar button {
+            padding: 7px 14px; background: white; border: 1px solid var(--light-gray);
+            color: var(--black); cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px;
+        }
+        .pdf-toolbar button:hover { border-color: var(--brand-red); color: var(--brand-red); }
+        .pdf-toolbar button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .pdf-toolbar .page-info { color: var(--gray); font-size: 0.85rem; }
+        .pdf-toolbar .btn-reset {
+            background: transparent; border: none; color: var(--gray);
+            text-decoration: underline; padding: 0; cursor: pointer; font-size: 0.78rem;
+        }
+
+        .panel {
+            background: white; border: 1px solid var(--light-gray);
+            padding: 18px; margin-bottom: 16px;
+        }
+        .panel h3 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; margin-bottom: 4px; }
+        .panel .panel-hint { color: var(--gray); font-size: 0.78rem; margin-bottom: 14px; line-height: 1.5; }
+
+        /* fields list */
+        #fields-list { display: flex; flex-direction: column; gap: 10px; }
+        .field-row {
+            border: 1px solid var(--light-gray); padding: 10px;
+            display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+        }
+        .field-row.active { border-color: var(--brand-red); }
+        .field-row .field-inputs { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .field-row .field-label-input,
+        .field-row .field-value-input {
+            width: 100%; padding: 8px 10px; border: 1px solid var(--light-gray);
+            font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+        }
+        .field-row .field-label-input:focus,
+        .field-row .field-value-input:focus { outline: none; border-color: var(--brand-red); }
+        .field-row .field-label-input { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+        .field-row .field-meta { color: var(--gray); font-size: 0.7rem; font-family: monospace; }
+        .field-row .field-delete {
+            background: transparent; border: none; cursor: pointer;
+            color: var(--gray); font-size: 1.1rem; padding: 4px 8px; line-height: 1;
+        }
+        .field-row .field-delete:hover { color: var(--brand-red); }
+        .fields-empty { color: var(--gray); font-size: 0.85rem; text-align: center; padding: 14px 0; }
+
+        /* sliders */
+        .slider-row { margin-bottom: 14px; }
+        .slider-row label {
+            display: flex; justify-content: space-between; align-items: baseline;
+            font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 6px;
+        }
+        .slider-row label .val { color: var(--black); font-family: monospace; font-size: 0.85rem; text-transform: none; letter-spacing: 0; }
+        .slider-row input[type=range] { width: 100%; accent-color: var(--brand-red); }
+        .slider-row select { width: 100%; padding: 9px 10px; border: 1px solid var(--light-gray); font-family: inherit; font-size: 0.85rem; background: white; }
+        .slider-row .hint { color: var(--gray); font-size: 0.7rem; margin-top: 4px; }
+
+        .phase-banner {
+            background: #fff8e1; border-left: 3px solid #c08a2b;
+            padding: 12px 14px; margin-bottom: 18px; font-size: 0.82rem; color: #5a4514;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN (mirrors admin.html) ══════════════ -->
+<div id="login-screen">
+    <div class="login-box">
+        <div class="login-logo">SARL <span>Monde Ascenseur</span></div>
+        <p class="login-sub">Remplisseur de formulaires</p>
+        <form id="login-form">
+            <label class="f-label">Email</label>
+            <input type="email" id="email" class="f-input" placeholder="admin@exemple.com" required>
+            <label class="f-label">Mot de passe</label>
+            <input type="password" id="password" class="f-input" placeholder="••••••••" required style="margin-bottom:20px;">
+            <button type="submit" class="btn-primary">Se connecter</button>
+        </form>
+        <p id="login-error">Email ou mot de passe incorrect.</p>
+    </div>
+</div>
+
+<!-- ══════════════ TOOL ══════════════ -->
+<div id="tool-panel">
+    <nav class="admin-nav">
+        <div class="admin-nav-title">Remplisseur — <span>Monde Ascenseur</span></div>
+        <div class="nav-links">
+            <a class="nav-link" href="admin.html">← Produits</a>
+            <a class="nav-link active" href="admin-handwriting.html">Remplisseur</a>
+            <button id="logout-btn" class="btn-logout">Déconnexion</button>
+        </div>
+    </nav>
+
+    <main class="tool-main">
+        <div class="phase-banner">
+            <strong>Phase 1</strong> — Déposez un PDF, cliquez sur les pointillés pour placer un champ, tapez votre texte. L'aperçu manuscrit s'affiche par-dessus le formulaire. Téléchargement et modèles arrivent dans les phases suivantes.
+        </div>
+
+        <!-- DROP ZONE -->
+        <div id="drop-zone">
+            <h2>Déposer le formulaire PDF ici</h2>
+            <p>ou cliquez pour parcourir</p>
+            <p class="hint">PDF uniquement. Pour un fichier Word : ouvrir dans Word → Fichier → Enregistrer sous → PDF.</p>
+            <input type="file" id="file-input" accept="application/pdf">
+            <p id="drop-error"></p>
+        </div>
+
+        <!-- TOOL AREA (revealed after PDF drop) -->
+        <div id="tool-area">
+            <div class="pdf-toolbar">
+                <div class="left">
+                    <button id="btn-prev-page" disabled>‹ Précédent</button>
+                    <span class="page-info" id="page-info">Page 1 / 1</span>
+                    <button id="btn-next-page" disabled>Suivant ›</button>
+                </div>
+                <button class="btn-reset" id="btn-reset">Changer de PDF</button>
+            </div>
+
+            <div class="tool-layout">
+                <div class="pdf-wrap">
+                    <div class="pdf-stage" id="pdf-stage">
+                        <canvas id="pdf-canvas"></canvas>
+                        <canvas id="overlay-canvas"></canvas>
+                    </div>
+                </div>
+
+                <aside>
+                    <div class="panel">
+                        <h3>Champs</h3>
+                        <p class="panel-hint">Cliquez sur une ligne pointillée du formulaire pour ajouter un champ. La ligne de base de l'écriture se posera exactement là où vous avez cliqué.</p>
+                        <div id="fields-list">
+                            <p class="fields-empty">Aucun champ. Cliquez sur le PDF pour commencer.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h3>Style de l'écriture</h3>
+                        <p class="panel-hint">Aperçu en temps réel. Ces réglages s'appliquent à tous les champs.</p>
+
+                        <div class="slider-row">
+                            <label>Police</label>
+                            <select id="ctrl-font">
+                                <option value="Cedarville Cursive">Cedarville (vrai gribouillis)</option>
+                                <option value="Homemade Apple">Homemade Apple (sale)</option>
+                                <option value="Dancing Script">Dancing Script (fluide)</option>
+                                <option value="Caveat">Caveat (proche de l'imprimé)</option>
+                            </select>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Inclinaison <span class="val" id="val-slant">12°</span></label>
+                            <input type="range" id="ctrl-slant" min="0" max="28" step="1" value="12">
+                            <div class="hint">Main fatiguée = penche vers l'avant</div>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Désordre <span class="val" id="val-mess">0.70</span></label>
+                            <input type="range" id="ctrl-mess" min="0" max="1.6" step="0.05" value="0.7">
+                            <div class="hint">Tremblement + variation de taille</div>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Empressement <span class="val" id="val-rush">0.60</span></label>
+                            <input type="range" id="ctrl-rush" min="0" max="1" step="0.05" value="0.6">
+                            <div class="hint">Compresse + fin de mot qui s'estompe</div>
+                        </div>
+
+                        <div class="slider-row">
+                            <label>Taille de base (pt) <span class="val" id="val-size">14</span></label>
+                            <input type="range" id="ctrl-size" min="8" max="28" step="1" value="14">
+                            <div class="hint">Hauteur de la police en points PDF</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════
+// FIREBASE CONFIG — copied from admin.html (same project)
+// ══════════════════════════════════════════════════════════
+const firebaseConfig = {
+    apiKey:            "AIzaSyASCskWsoYCoLjWI36ZB9N75_NJVfZqd9k",
+    authDomain:        "websitemondeaascenseur.firebaseapp.com",
+    projectId:         "websitemondeaascenseur",
+    storageBucket:     "websitemondeaascenseur.firebasestorage.app",
+    messagingSenderId: "670306506642",
+    appId:             "1:670306506642:web:e57c33e0eef5128146934b"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore(); // reserved for Phase 3 (templates)
+
+// pdf.js worker — required for the library to render pages off the main thread.
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+
+// ══════════════════════════════════════════════════════════
+// AUTH GATE — identical pattern to admin.html
+// ══════════════════════════════════════════════════════════
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('tool-panel').style.display   = 'block';
+    } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('tool-panel').style.display   = 'none';
+    }
+});
+
+document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const errEl = document.getElementById('login-error');
+    errEl.style.display = 'none';
+    try {
+        await auth.signInWithEmailAndPassword(
+            document.getElementById('email').value,
+            document.getElementById('password').value
+        );
+    } catch {
+        errEl.style.display = 'block';
+    }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => auth.signOut());
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+// Currently-loaded PDF document (pdfjsLib.PDFDocumentProxy) and the
+// rendering scale of the currently-displayed page. Scale is what
+// translates between canvas pixels (what the user clicks) and PDF
+// points (what we store, so coordinates are zoom-independent and
+// reusable as templates later on).
+const state = {
+    pdfDoc:        null,
+    currentPage:   1,
+    pageCount:     0,
+    scale:         1.5,   // 1.5 = comfortable reading on desktop
+    pageHeightPt:  0,     // height of the current page in PDF points
+    pageWidthPt:   0,
+    fields:        [],    // {id, label, value, page_index, x_pt, baseline_y_pt, width_pt}
+    style: {
+        font: 'Cedarville Cursive',
+        slant: 12,        // degrees
+        messiness: 0.7,
+        rush: 0.6,
+        baseSizePt: 14,
+    },
+    activeFieldId: null,
+};
+let fieldCounter = 0;
+
+const pdfCanvas     = document.getElementById('pdf-canvas');
+const overlayCanvas = document.getElementById('overlay-canvas');
+const pdfCtx        = pdfCanvas.getContext('2d');
+const overlayCtx    = overlayCanvas.getContext('2d');
+
+// ══════════════════════════════════════════════════════════
+// FILE INPUT — drag-and-drop + click-to-browse on the same zone.
+// ══════════════════════════════════════════════════════════
+const dropZone  = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const dropError = document.getElementById('drop-error');
+const toolArea  = document.getElementById('tool-area');
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+['dragenter','dragover'].forEach(ev =>
+    dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('dragging'); }));
+['dragleave','drop'].forEach(ev =>
+    dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('dragging'); }));
+
+dropZone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+});
+
+fileInput.addEventListener('change', e => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+});
+
+async function handleFile(file) {
+    dropError.style.display = 'none';
+    // Reject non-PDF early — Word files in particular render badly in
+    // the browser without a heavy conversion library, and the brief
+    // is "PDF only" by user decision.
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        dropError.textContent = 'Format non supporté. Convertir d\'abord en PDF dans Word (Fichier → Enregistrer sous → PDF).';
+        dropError.style.display = 'block';
+        return;
+    }
+    try {
+        const buf = await file.arrayBuffer();
+        state.pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+        state.pageCount = state.pdfDoc.numPages;
+        state.currentPage = 1;
+        state.fields = [];
+        fieldCounter = 0;
+        state.activeFieldId = null;
+        dropZone.style.display = 'none';
+        toolArea.style.display = 'block';
+        await renderPage(1);
+        renderFieldsList();
+    } catch (e) {
+        console.error('PDF load failed:', e);
+        dropError.textContent = 'Impossible de charger ce PDF. Réessayez avec un autre fichier.';
+        dropError.style.display = 'block';
+    }
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+    state.pdfDoc = null;
+    state.fields = [];
+    toolArea.style.display = 'none';
+    dropZone.style.display = 'block';
+    fileInput.value = '';
+});
+
+document.getElementById('btn-prev-page').addEventListener('click', () => {
+    if (state.currentPage > 1) { state.currentPage--; renderPage(state.currentPage); }
+});
+document.getElementById('btn-next-page').addEventListener('click', () => {
+    if (state.currentPage < state.pageCount) { state.currentPage++; renderPage(state.currentPage); }
+});
+
+// ══════════════════════════════════════════════════════════
+// PDF RENDERING — pdf.js renders the current page into pdfCanvas,
+// then we size overlayCanvas to match. We capture the page's
+// dimensions in PDF points (viewport.width / scale) so we can
+// translate clicks → stored coordinates.
+// ══════════════════════════════════════════════════════════
+async function renderPage(num) {
+    if (!state.pdfDoc) return;
+    const page = await state.pdfDoc.getPage(num);
+    const viewport = page.getViewport({ scale: state.scale });
+    pdfCanvas.width = viewport.width;
+    pdfCanvas.height = viewport.height;
+    overlayCanvas.width = viewport.width;
+    overlayCanvas.height = viewport.height;
+    state.pageWidthPt  = viewport.width  / state.scale;
+    state.pageHeightPt = viewport.height / state.scale;
+    await page.render({ canvasContext: pdfCtx, viewport }).promise;
+    drawOverlay();
+    document.getElementById('page-info').textContent = `Page ${num} / ${state.pageCount}`;
+    document.getElementById('btn-prev-page').disabled = (num <= 1);
+    document.getElementById('btn-next-page').disabled = (num >= state.pageCount);
+}
+
+// ══════════════════════════════════════════════════════════
+// CLICK-TO-PLACE — user clicks anywhere on the overlay, we add a
+// new field whose baseline sits exactly at the click y. Width
+// defaults to a third of the page width — they'll resize later
+// (Phase 2).
+// ══════════════════════════════════════════════════════════
+overlayCanvas.addEventListener('click', e => {
+    if (!state.pdfDoc) return;
+    const rect = overlayCanvas.getBoundingClientRect();
+    const cssX = e.clientX - rect.left;
+    const cssY = e.clientY - rect.top;
+    // The canvas has its drawing buffer set to viewport.width × viewport.height,
+    // but its CSS size may differ if the wrap is narrower. Scale the click
+    // back into drawing-buffer pixels first.
+    const canvasX = cssX * (overlayCanvas.width  / rect.width);
+    const canvasY = cssY * (overlayCanvas.height / rect.height);
+    // Now translate canvas pixels → PDF points. pdf-lib (Phase 2) and our
+    // stored Firestore templates (Phase 3) both expect PDF coordinates,
+    // origin at bottom-left.
+    const x_pt           = canvasX / state.scale;
+    const baseline_y_pt  = state.pageHeightPt - (canvasY / state.scale);
+    const width_pt       = Math.min(220, state.pageWidthPt - x_pt - 20);
+
+    const id = `f-${++fieldCounter}`;
+    state.fields.push({
+        id,
+        label: `champ ${fieldCounter}`,
+        value: '',
+        page_index: state.currentPage - 1,
+        x_pt,
+        baseline_y_pt,
+        width_pt,
+    });
+    state.activeFieldId = id;
+    renderFieldsList();
+    drawOverlay();
+    // Focus the new field's value input so user can type immediately.
+    setTimeout(() => {
+        const el = document.querySelector(`[data-field="${id}"] .field-value-input`);
+        if (el) el.focus();
+    }, 0);
+});
+
+// ══════════════════════════════════════════════════════════
+// FIELDS LIST — sidebar editor. Label + value per field. Deleting
+// a field removes it from state and re-renders.
+// ══════════════════════════════════════════════════════════
+const fieldsList = document.getElementById('fields-list');
+
+function renderFieldsList() {
+    const onCurrentPage = state.fields.filter(f => f.page_index === state.currentPage - 1);
+    if (onCurrentPage.length === 0) {
+        fieldsList.innerHTML = '<p class="fields-empty">Aucun champ sur cette page. Cliquez sur le PDF pour ajouter.</p>';
+        return;
+    }
+    fieldsList.innerHTML = '';
+    for (const f of onCurrentPage) {
+        const row = document.createElement('div');
+        row.className = 'field-row' + (f.id === state.activeFieldId ? ' active' : '');
+        row.dataset.field = f.id;
+        row.innerHTML = `
+            <div class="field-inputs">
+                <input class="field-label-input" type="text" value="${escapeHtml(f.label)}" placeholder="étiquette (ex: nom)">
+                <input class="field-value-input" type="text" value="${escapeHtml(f.value)}" placeholder="valeur à écrire">
+                <span class="field-meta">x ${f.x_pt.toFixed(0)}pt · y ${f.baseline_y_pt.toFixed(0)}pt · larg ${f.width_pt.toFixed(0)}pt</span>
+            </div>
+            <button class="field-delete" title="Supprimer">×</button>
+        `;
+        row.querySelector('.field-label-input').addEventListener('input', e => {
+            f.label = e.target.value;
+        });
+        row.querySelector('.field-value-input').addEventListener('input', e => {
+            f.value = e.target.value;
+            drawOverlay();
+        });
+        row.querySelector('.field-value-input').addEventListener('focus', () => {
+            state.activeFieldId = f.id;
+            drawOverlay();
+            // Light visual feedback only — don't re-render the list itself
+            // mid-typing, which would blow away the input's focus.
+            document.querySelectorAll('.field-row').forEach(r =>
+                r.classList.toggle('active', r.dataset.field === f.id));
+        });
+        row.querySelector('.field-delete').addEventListener('click', () => {
+            state.fields = state.fields.filter(x => x.id !== f.id);
+            if (state.activeFieldId === f.id) state.activeFieldId = null;
+            renderFieldsList();
+            drawOverlay();
+        });
+        fieldsList.appendChild(row);
+    }
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    })[c]);
+}
+
+// ══════════════════════════════════════════════════════════
+// STYLE CONTROLS
+// ══════════════════════════════════════════════════════════
+const ctrl = {
+    font:  document.getElementById('ctrl-font'),
+    slant: document.getElementById('ctrl-slant'),
+    mess:  document.getElementById('ctrl-mess'),
+    rush:  document.getElementById('ctrl-rush'),
+    size:  document.getElementById('ctrl-size'),
+};
+const valSlant = document.getElementById('val-slant');
+const valMess  = document.getElementById('val-mess');
+const valRush  = document.getElementById('val-rush');
+const valSize  = document.getElementById('val-size');
+
+function syncStyleFromControls() {
+    state.style.font       = ctrl.font.value;
+    state.style.slant      = parseFloat(ctrl.slant.value);
+    state.style.messiness  = parseFloat(ctrl.mess.value);
+    state.style.rush       = parseFloat(ctrl.rush.value);
+    state.style.baseSizePt = parseFloat(ctrl.size.value);
+    valSlant.textContent = `${state.style.slant}°`;
+    valMess.textContent  = state.style.messiness.toFixed(2);
+    valRush.textContent  = state.style.rush.toFixed(2);
+    valSize.textContent  = state.style.baseSizePt;
+}
+Object.values(ctrl).forEach(el => {
+    el.addEventListener('input', () => { syncStyleFromControls(); drawOverlay(); });
+    el.addEventListener('change', () => { syncStyleFromControls(); drawOverlay(); });
+});
+syncStyleFromControls();
+
+// ══════════════════════════════════════════════════════════
+// CURSIVE RENDERING — adapted from the user's approved demo. Per-
+// character: rotation, vertical wobble, size jitter, spacing jitter,
+// baseline drift (sin wander), forward slant via shear, trail-off
+// (smaller + lighter toward word ends). Deterministic per-field
+// via a seeded RNG so the same input produces the same output.
+// ══════════════════════════════════════════════════════════
+function makeRand(seed) {
+    let s = seed >>> 0;
+    return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+}
+
+function drawOverlay() {
+    overlayCtx.setTransform(1, 0, 0, 1, 0, 0);
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+    // Draw placement guides for each field on the current page so the
+    // user can see where they clicked even before typing a value.
+    for (const f of state.fields) {
+        if (f.page_index !== state.currentPage - 1) continue;
+        const canvasX = f.x_pt * state.scale;
+        const canvasY = (state.pageHeightPt - f.baseline_y_pt) * state.scale;
+        const canvasW = f.width_pt * state.scale;
+        // Faint baseline indicator (only when active or empty).
+        if (f.id === state.activeFieldId || !f.value) {
+            overlayCtx.strokeStyle = f.id === state.activeFieldId ? 'rgba(192,57,43,0.55)' : 'rgba(0,0,0,0.18)';
+            overlayCtx.lineWidth = 1;
+            overlayCtx.beginPath();
+            overlayCtx.moveTo(canvasX, canvasY);
+            overlayCtx.lineTo(canvasX + canvasW, canvasY);
+            overlayCtx.stroke();
+        }
+        // Draw the cursive value over the form, baseline-aligned with click.
+        if (f.value) {
+            drawCursiveLine(overlayCtx, f.value, canvasX, canvasY, canvasW, state.style, state.scale, f.id);
+        }
+    }
+}
+
+// Render one line of cursive text. `baselineY` is canvas pixels — the
+// text BASELINE lands exactly on that y, which is what makes the
+// output overlay the form's existing dotted line. `maxWidth` caps the
+// visible glyphs (later chars beyond width are skipped, not shrunk).
+function drawCursiveLine(ctx, text, startX, baselineY, maxWidth, style, scale, seedStr) {
+    const slantRad = style.slant * Math.PI / 180;
+    const shear    = Math.tan(slantRad);
+    const baseSize = style.baseSizePt * scale;   // PDF points → canvas pixels
+    const mess     = style.messiness;
+    const rush     = style.rush;
+    // Deterministic per-field seed so each field has its own "personality"
+    // independent of others. Hashing the string id keeps it stable when
+    // user re-renders without retyping.
+    let seedHash = 1;
+    for (let i = 0; i < seedStr.length; i++) seedHash = (seedHash * 31 + seedStr.charCodeAt(i)) >>> 0;
+
+    // Baseline wander parameters — same shape as the approved demo.
+    const lr = makeRand(seedHash ^ 99173);
+    const driftAmp   = (5 + 7 * rush) * Math.max(mess, 0.4) * (scale / 4);
+    const driftFreq  = (0.010 + lr() * 0.008) / scale;
+    const driftPhase = lr() * 6.28;
+
+    const words = text.split(/(\s+)/);
+    let x = startX;
+    let counter = seedHash;
+
+    for (const tok of words) {
+        const isSpace = /^\s+$/.test(tok);
+        const L = tok.length;
+        for (let k = 0; k < L; k++) {
+            const ch = tok[k];
+            const r = makeRand((counter++ * 40503) ^ ch.charCodeAt(0));
+            const t = isSpace ? 0 : (L > 3 ? k / (L - 1) : 0);
+            const trail = t * t * rush;
+            const size = baseSize * (1 + (r() - 0.5) * 0.16 * mess) * (1 - 0.18 * trail);
+
+            ctx.font = `${size}px "${style.font}", cursive`;
+            const w = ctx.measureText(ch).width;
+            // Stop drawing if we've overrun the field width (rough cap; some
+            // glyphs may still extend slightly past due to italic descenders).
+            if ((x - startX) + w > maxWidth) return;
+
+            const rot   = (r() - 0.5) * 0.14 * mess;
+            const dy    = (r() - 0.5) * 8 * mess;
+            const drift = Math.sin(x * driftFreq + driftPhase) * driftAmp;
+
+            // Ink color: muted blue/grey like a tired ballpoint. Darker at
+            // word start, lighter as the word trails off.
+            const base  = 24 + Math.floor(r() * 16);
+            const light = Math.floor(70 * trail);
+            const R = Math.min(120, base + light);
+            const G = Math.min(150, base + 24 + light);
+            const B = Math.min(200, base + 78 + light);
+            ctx.fillStyle = `rgb(${R},${G},${B})`;
+
+            ctx.save();
+            ctx.translate(x + w / 2, baselineY + dy + drift);
+            ctx.transform(1, 0, shear, 1, 0, 0);
+            ctx.rotate(rot);
+            ctx.shadowColor = `rgba(${R},${G},${B},0.25)`;
+            ctx.shadowBlur  = 0.6 * mess + 0.3;
+            ctx.fillText(ch, -w / 2, 0);
+            ctx.restore();
+
+            const compress = 1 - 0.16 * rush;
+            x += w * compress * (1 + (r() - 0.5) * 0.10 * mess);
+            if (isSpace) x += 3 * mess;
+        }
+    }
+}
+
+// Ensure Google Fonts are loaded before the first cursive render so the
+// fallback (default cursive) doesn't briefly flash. drawOverlay runs after
+// fonts.ready resolves, or immediately if the loader is unavailable.
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(drawOverlay);
+}
+</script>
+</body>
+</html>

@@ -200,7 +200,10 @@
 <div id="admin-panel">
     <nav class="admin-nav">
         <div class="admin-nav-title">Admin — <span>Monde Ascenseur</span></div>
-        <button id="logout-btn" class="btn-logout">Déconnexion</button>
+        <div style="display:flex; align-items:center; gap:18px;">
+            <a href="admin-handwriting.html" style="color:var(--gray); text-decoration:none; font-size:0.78rem; font-weight:600; letter-spacing:0.5px;" onmouseover="this.style.color='var(--brand-red)'" onmouseout="this.style.color='var(--gray)'">Remplisseur</a>
+            <button id="logout-btn" class="btn-logout">Déconnexion</button>
+        </div>
     </nav>
 
     <main class="admin-main">
