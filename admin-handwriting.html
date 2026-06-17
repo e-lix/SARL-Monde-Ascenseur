@@ -602,26 +602,17 @@ function drawOverlay() {
     overlayCtx.setTransform(1, 0, 0, 1, 0, 0);
     overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
 
-    // Draw placement guides for each field on the current page so the
-    // user can see where they clicked even before typing a value.
+    // Render the cursive value of every field on the current page. No
+    // placement indicators — the dotted lines on the original form are
+    // already the visual cue for where the user clicked, and an extra
+    // baseline marker just adds noise.
     for (const f of state.fields) {
         if (f.page_index !== state.currentPage - 1) continue;
+        if (!f.value) continue;
         const canvasX = f.x_pt * state.scale;
         const canvasY = (state.pageHeightPt - f.baseline_y_pt) * state.scale;
         const canvasW = f.width_pt * state.scale;
-        // Faint baseline indicator (only when active or empty).
-        if (f.id === state.activeFieldId || !f.value) {
-            overlayCtx.strokeStyle = f.id === state.activeFieldId ? 'rgba(192,57,43,0.55)' : 'rgba(0,0,0,0.18)';
-            overlayCtx.lineWidth = 1;
-            overlayCtx.beginPath();
-            overlayCtx.moveTo(canvasX, canvasY);
-            overlayCtx.lineTo(canvasX + canvasW, canvasY);
-            overlayCtx.stroke();
-        }
-        // Draw the cursive value over the form, baseline-aligned with click.
-        if (f.value) {
-            drawCursiveLine(overlayCtx, f.value, canvasX, canvasY, canvasW, state.style, state.scale, f.id);
-        }
+        drawCursiveLine(overlayCtx, f.value, canvasX, canvasY, canvasW, state.style, state.scale, f.id);
     }
 }
 
